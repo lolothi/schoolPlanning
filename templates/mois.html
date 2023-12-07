@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Calculs factures Périscolaire</h1>
+<p>Semaines classiques : cantine tous les midi, sans periscolaire les matin/soir</p>
+<p>Date du jour</p>
+<input type="date"><a>{{today}}</a>
+
+<form action="" method="POST">
+    <label for="month">month :</label>
+    <select name="month" id="month-select" id="month" required>
+        <option value="">--Please choose an option--</option>
+        <option value="January">Janvier</option>
+        <option value="february">février</option>
+        <option value="March">Mars</option>
+      </select>
+    <label for="year">year :</label>
+    <input type="year" id="year" name="year" value="{{ today.year }}" required><br>
+    <input type="month" id="month" name="month" value="{{ today.month.name }}" required><br>
+    <button type="submit">Add a month</button>
+    </form>
+
+
+{% endblock %}
