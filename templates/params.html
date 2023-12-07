@@ -6,18 +6,25 @@
 <p>Entrer les paramètres pour les calculs</p>
 
 <h2>Enfants</h2>
-<form method="post">
-  <label for="child_name">Nom</label>
-  <input type="child_name" name="child_name" id="child_name" class="inputs" required>
-  <input type="submit" id="submitBtn" value="submit">
-  <br/>
-  {% if message %}
-      <a class="message">{{message}}</a>
-  {% endif %}
-  <br/>
-  {% if error %}
-  <p class="errorAuth">{{error}}</p>
-  {% endif %}
+{%if childsInDb%}
+<ul>
+  {%for child in childsInDb%}
+  <li >{{child[1]}}</li>
+  {%endfor%}
+</ul>
+{%endif%}
+  <form method="post">
+    <label for="child_name">Prénom</label>
+    <input type="child_name" name="child_name" id="child_name" class="inputs" required>
+    <input type="submit" id="submitBtn" value="submit">
+    <br/>
+    {% if message %}
+        <a class="message">{{message}}</a>
+      {% endif %}
+      <br/>
+      {% if error %}
+      <p class="errorAuth">{{error}}</p>
+      {% endif %}
   <br/>
 </form>
 
