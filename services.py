@@ -27,6 +27,15 @@ def getChilds():
         return res
     db.close()
 
+def setActivity(activitydname):
+    """Create one activity"""
+    db = get_db()
+    reqSQL = f"insert into Ativities (activityname) values ('{activityname}')  "
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    db.commit()
+    db.close()
+
 # Connect to DB
 db = get_db()
 

@@ -14,8 +14,37 @@
 </ul>
 {%endif%}
   <form method="post">
-    <label for="child_name">Prénom</label>
+    <label for="child_name">Prénom*</label>
     <input type="child_name" name="child_name" id="child_name" class="inputs" required>
+    <input type="submit" id="submitBtn" value="submit">
+    <br/>
+    {% if message %}
+        <a class="message">{{message}}</a>
+      {% endif %}
+      <br/>
+      {% if error %}
+      <p class="errorAuth">{{error}}</p>
+      {% endif %}
+  <br/>
+</form><br>
+
+<h2>Activités</h2>
+<!-- {%if activitiesInDb%}
+<ul>
+  {%for child in childsInDb%}
+  <li >{{child[1]}}</li>
+  {%endfor%}
+</ul>
+{%endif%} -->
+  <form method="post">
+    <label for="activity_name">Nom*: </label>
+    <input type="activity_name" name="activity_name" id="activity_name" class="inputs" required>
+    <label for="activity_price">Tarif/Jour*: </label>
+    <input type="activity_price" name="activity_price" id="activity_price" class="inputs" required>
+    <label for="activity_time">Durée(h): </label>
+    <input type="activity_time" name="activity_time" id="activity_time" class="inputs">
+    <label for="activity_comment">Commentaire: </label>
+    <input type="activity_comment" name="activity_comment" id="activity_comment" class="inputs">
     <input type="submit" id="submitBtn" value="submit">
     <br/>
     {% if message %}
