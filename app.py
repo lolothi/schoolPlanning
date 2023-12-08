@@ -16,22 +16,20 @@ def index():
 
 @app.route('/params', methods=["POST", "GET"])
 def params():
-    """Child creation"""
     error = None
     message = None
-    child_name = request.form.get("child_name")
 
+    """Child creation"""
+    child_name = request.form.get("child_name")
     childsInDb = services.getChilds()
 
     """Activity creation"""
-        error = None
-        message = None
-        activity_name = request.form.get("activity_name")
-        activity_time = request.form.get("activity_time")
-        activity_price = request.form.get("activity_price")
-        activity_comment = request.form.get("activity_comment")
+    activity_name = request.form.get("activity_name")
+    activity_time = request.form.get("activity_time")
+    activity_price = request.form.get("activity_price")
+    activity_comment = request.form.get("activity_comment")
 
-           # childsInDb = services.getActivities()
+    activitiesInDb = services.getActivities()
 
     if request.method == "POST":
         if child_name:
@@ -42,11 +40,11 @@ def params():
                 error = "Erreur dans la création"
 
         if activity_name:
-        try:
-            services.setActivity(activity_name)
-            message = "Enfant créé"
-        except:
-            error = "Erreur dans la création"
+            try:
+                services.setActivity(activity_name, activity_price, activity_time, activity_comment)
+                message = "Activitée créé"
+            except:
+                error = "Erreur dans la création"
 
     return render_template("params.html", message=message, error=error, childsInDb=childsInDb, activitiesInDb=activitiesInDb, child_name=child_name, activity_name=activity_name, activity_time=activity_time, activity_price=activity_price, activity_comment=activity_comment)
 

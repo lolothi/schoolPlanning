@@ -9,6 +9,7 @@ python3 -m venv venv
 
 #Activation
 source venv/bin/activate
+# With Fish : source venv/bin/activate.fish
 #(Windows)
 venv\Scripts\activate.bat
 
@@ -17,7 +18,7 @@ pip install Flask
 
 # if you need : install your library saved in requirements.txt
 pip install -r ./requirements.txt
-# With Fish : source venv/bin/activate.fish
+
 ```
 
 # lancer le server

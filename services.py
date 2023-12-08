@@ -27,13 +27,25 @@ def getChilds():
         return res
     db.close()
 
-def setActivity(activitydname):
+def setActivity(activityname, activityprice, activitytime="", activitycomment=""):
     """Create one activity"""
     db = get_db()
-    reqSQL = f"insert into Ativities (activityname) values ('{activityname}')  "
+    reqSQL = f"insert into Activities (activityname, activityprice, activitytime, activitycomment) values ('{activityname}', '{activityprice}', '{activitytime}', '{activitycomment}')  "
     cur = db.cursor()
     cur.execute(reqSQL)
     db.commit()
+    db.close()
+
+def getActivities():
+    """read the activities"""
+    db = get_db()
+    reqSQL = f"select * from Activities"
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    res = cur.fetchall()
+    if res:
+        db.close()
+        return res
     db.close()
 
 # Connect to DB

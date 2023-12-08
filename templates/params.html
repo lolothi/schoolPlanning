@@ -29,22 +29,22 @@
 </form><br>
 
 <h2>Activités</h2>
-<!-- {%if activitiesInDb%}
+{%if activitiesInDb%}
 <ul>
-  {%for child in childsInDb%}
-  <li >{{child[1]}}</li>
+  {%for activity in activitiesInDb%}
+  <li ><strong>{{activity[1]}}</strong> - {{activity[2]}}€/jour - {{activity[3]}}h/jour - <a >comment: {{ activity[4] }}</a></li>
   {%endfor%}
 </ul>
-{%endif%} -->
+{%endif%}
   <form method="post">
     <label for="activity_name">Nom*: </label>
-    <input type="activity_name" name="activity_name" id="activity_name" class="inputs" required>
+    <input type="text" name="activity_name" id="activity_name" class="inputs" required><br>
     <label for="activity_price">Tarif/Jour*: </label>
-    <input type="activity_price" name="activity_price" id="activity_price" class="inputs" required>
+    <input type="text" name="activity_price" id="activity_price" class="inputs" required><br>
     <label for="activity_time">Durée(h): </label>
-    <input type="activity_time" name="activity_time" id="activity_time" class="inputs">
+    <input type="number" name="activity_time" id="activity_time" class="inputs"><br>
     <label for="activity_comment">Commentaire: </label>
-    <input type="activity_comment" name="activity_comment" id="activity_comment" class="inputs">
+    <input type="text" name="activity_comment" id="activity_comment" class="inputs"><br>
     <input type="submit" id="submitBtn" value="submit">
     <br/>
     {% if message %}
