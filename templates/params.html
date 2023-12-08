@@ -9,52 +9,56 @@
 {%if childsInDb%}
 <ul>
   {%for child in childsInDb%}
-  <li >{{child[1]}}</li>
+  <li>{{child[1]}} - <img src= {{ url_for('static', filename='images/edition.png')}} height="15"/>
+    <img src= {{ url_for('static', filename='images/supprimer.png')}} height="15"/>
+  </li>
   {%endfor%}
 </ul>
 {%endif%}
-  <form method="post">
-    <label for="child_name">Prénom*</label>
-    <input type="child_name" name="child_name" id="child_name" class="inputs" required>
-    <input type="submit" id="submitBtn" value="submit">
-    <br/>
-    {% if message %}
-        <a class="message">{{message}}</a>
-      {% endif %}
-      <br/>
-      {% if error %}
-      <p class="errorAuth">{{error}}</p>
-      {% endif %}
-  <br/>
+<form method="post">
+  <label for="child_name">Prénom*</label>
+  <input type="child_name" name="child_name" id="child_name" class="inputs" required><br>
+  <img type="submit" value="submit" id="submitBtn" src= {{ url_for('static', filename='images/ajouter.png')}} height="20"/>
+  <input type="submit" id="submitBtn" value="submit">
+  <br />
+  {% if message %}
+  <a class="message">{{message}}</a>
+  {% endif %}
+  <br />
+  {% if error %}
+  <p class="errorAuth">{{error}}</p>
+  {% endif %}
+  <br />
 </form><br>
 
 <h2>Activités</h2>
 {%if activitiesInDb%}
 <ul>
   {%for activity in activitiesInDb%}
-  <li ><strong>{{activity[1]}}</strong> - {{activity[2]}}€/jour - {{activity[3]}}h/jour - <a >comment: {{ activity[4] }}</a></li>
+  <li><strong>{{activity[1]}}</strong> - {{activity[2]}}€/jour - {{activity[3]}}h/jour - <a>comment: {{ activity[4]
+      }}</a></li>
   {%endfor%}
 </ul>
 {%endif%}
-  <form method="post">
-    <label for="activity_name">Nom*: </label>
-    <input type="text" name="activity_name" id="activity_name" class="inputs" required><br>
-    <label for="activity_price">Tarif/Jour*: </label>
-    <input type="text" name="activity_price" id="activity_price" class="inputs" required><br>
-    <label for="activity_time">Durée(h): </label>
-    <input type="number" name="activity_time" id="activity_time" class="inputs"><br>
-    <label for="activity_comment">Commentaire: </label>
-    <input type="text" name="activity_comment" id="activity_comment" class="inputs"><br>
-    <input type="submit" id="submitBtn" value="submit">
-    <br/>
-    {% if message %}
-        <a class="message">{{message}}</a>
-      {% endif %}
-      <br/>
-      {% if error %}
-      <p class="errorAuth">{{error}}</p>
-      {% endif %}
-  <br/>
+<form method="post">
+  <label for="activity_name">Nom*: </label>
+  <input type="text" name="activity_name" id="activity_name" class="inputs" required><br>
+  <label for="activity_price">Tarif/Jour*: </label>
+  <input type="text" name="activity_price" id="activity_price" class="inputs" required><br>
+  <label for="activity_time">Durée(h): </label>
+  <input type="number" name="activity_time" id="activity_time" class="inputs"><br>
+  <label for="activity_comment">Commentaire: </label>
+  <input type="text" name="activity_comment" id="activity_comment" class="inputs"><br>
+  <input type="submit" id="submitBtn" value="submit">
+  <br />
+  {% if message %}
+  <a class="message">{{message}}</a>
+  {% endif %}
+  <br />
+  {% if error %}
+  <p class="errorAuth">{{error}}</p>
+  {% endif %}
+  <br />
 </form>
 
 
