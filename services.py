@@ -2,9 +2,11 @@ import sqlite3
 
 NAME_DATABASE = "PeriscoDatabase.db"
 
+
 def get_db():
     """Connect the sqlite Database"""
     return sqlite3.connect(NAME_DATABASE, check_same_thread=False)
+
 
 def setChild(childname):
     """Create the information of the child"""
@@ -14,6 +16,7 @@ def setChild(childname):
     cur.execute(reqSQL)
     db.commit()
     db.close()
+
 
 def getChilds():
     """read the childs"""
@@ -27,6 +30,7 @@ def getChilds():
         return res
     db.close()
 
+
 def setActivity(activityname, activityprice, activitytime="", activitycomment=""):
     """Create one activity"""
     db = get_db()
@@ -35,6 +39,7 @@ def setActivity(activityname, activityprice, activitytime="", activitycomment=""
     cur.execute(reqSQL)
     db.commit()
     db.close()
+
 
 def getActivities():
     """read the activities"""
@@ -48,6 +53,7 @@ def getActivities():
         return res
     db.close()
 
+
 def setUsualActivity(day, activity_id):
     """Create one usual activity"""
     db = get_db()
@@ -56,6 +62,7 @@ def setUsualActivity(day, activity_id):
     cur.execute(reqSQL)
     db.commit()
     db.close()
+
 
 def getUsualActivities():
     """read the usual activities"""
@@ -69,6 +76,7 @@ def getUsualActivities():
         return res
     db.close()
 
+
 def getListOfUsualActivitiesGroupByDay():
     """read the usual activities"""
     db = get_db()
@@ -80,6 +88,7 @@ def getListOfUsualActivitiesGroupByDay():
         db.close()
         return res
     db.close()
+
 
 # Connect to DB
 db = get_db()
