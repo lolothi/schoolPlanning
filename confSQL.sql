@@ -12,5 +12,12 @@ activitytime smallint,
 activitycomment VARCHAR(50) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS Usualactivities (
+id integer primary key autoincrement, 
+day VARCHAR(30) NOT NULL,
+activity_id integer, 
+FOREIGN KEY (activity_id) REFERENCES Activities(id)
+);
+
 
 

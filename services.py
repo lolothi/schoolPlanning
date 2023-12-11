@@ -48,6 +48,39 @@ def getActivities():
         return res
     db.close()
 
+def setUsualActivity(day, activity_id):
+    """Create one usual activity"""
+    db = get_db()
+    reqSQL = f"insert into Usualactivities (day, activity_id) values ('{day}', '{activity_id}')  "
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    db.commit()
+    db.close()
+
+def getUsualActivities():
+    """read the usual activities"""
+    db = get_db()
+    reqSQL = f"select * from Usualactivities ORDER BY day ASC"
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    res = cur.fetchall()
+    if res:
+        db.close()
+        return res
+    db.close()
+
+def getListOfUsualActivitiesGroupByDay():
+    """read the usual activities"""
+    db = get_db()
+    reqSQL = f"SELECT day, GROUP_CONCAT(activity_id) AS activities_list from Usualactivities GROUP BY day"
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    res = cur.fetchall()
+    if res:
+        db.close()
+        return res
+    db.close()
+
 # Connect to DB
 db = get_db()
 
