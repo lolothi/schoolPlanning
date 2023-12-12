@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from datetime import datetime
 import calendar
 import services
@@ -9,18 +9,30 @@ import functions_help
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-
 @app.route("/")
 def index():
     today = datetime.today()
     print("calendar: ", calendar.monthcalendar(2023, 12))
     return render_template("home.html", today=today)
 
+@app.route("/params_supprimer", methods=["POST", "GET"])
+def params_delete():
+    print('prout')
+    # child_name = request.form.post("child_name")
+    return redirect("/params")
 
 @app.route("/params", methods=["POST", "GET"])
 def params():
     error = None
     message = None
+    isInEditionMode = False
+
+    # def toggle_edition_mode():
+    #     print('EDITIONMODEchanges')
+    #     if isInEditionMode is False:
+    #         isInEditionMode=True
+    #     else:
+    #         isInEditionMode=False
 
     """Child creation"""
     child_name = request.form.get("child_name")
@@ -60,7 +72,7 @@ def params():
 
         if activity_day and usual_activity:
             try:
-                if activity_day > 0 and usual_activity > 0:
+                if int(activity_day) > 0 and int(usual_activity) > 0:
                     services.setUsualActivity(activity_day, usual_activity)
                     message = "Activité créé"
             except:
@@ -75,18 +87,11 @@ def params():
         error=error,
         childsInDb=childsInDb,
         activitiesInDb=activitiesInDb,
-        child_name=child_name,
-        activity_name=activity_name,
-        activity_time=activity_time,
-        activity_price=activity_price,
-        activity_comment=activity_comment,
         JoursFeriesAnneeEnCours=JoursFeriesAnneeEnCours.dumps(),
         usual_activities_in_DB=usual_activities_in_DB_day_group,
-        activity_day=activity_day,
-        usual_activity=usual_activity,
         Jour=Jour,
         stringToNumber=functions_help.stringToNumber,
-    )
+        isInEditionMode=isInEditionMode    )
 
 
 if __name__ == "__main__":

@@ -4,21 +4,32 @@
 
 <h1>Paramètres</h1>
 <p>Entrer les paramètres pour les calculs</p>
+<p>Modifier ou supprimer les paramètres : <img  src={{ url_for('static', filename='images/edition.png' )}} height="15" />
+  <img src={{ url_for('static', filename='images/supprimer.png' )}} height="15" /></p>
 
 <h2>Enfants</h2>
 {%if childsInDb%}
 <ul>
   {%for child in childsInDb%}
-  <li>{{child[1]}} - <img src={{ url_for('static', filename='images/edition.png' )}} height="15" />
-    <img src={{ url_for('static', filename='images/supprimer.png' )}} height="15" />
-  </li>
+  <li>{{child[1]}}</li>
+  <form method="post" action="/params_supprimer">
+    <input type="child_name" name="child_name" id="child_name" class="inputs" value="{{child[1]}}"><input type="submit" id="submitBtn" value="DEL">
+    <br />
+  </form>
   {%endfor%}
 </ul>
 {%endif%}
+
+<form method="post">
+  <input type="child_name" name="child_name" id="child_name" class="inputs" required><br>
+  <input type="submit" id="submitBtn" value="valider">
+  <br />
+</form>
+
+{%if isInEditionMode==False%}
 <form method="post">
   <label for="child_name">Prénom*</label>
   <input type="child_name" name="child_name" id="child_name" class="inputs" required><br>
-  <!-- <img type="submit" value="valider" id="submitBtn" src= {{ url_for('static', filename='images/ajouter.png')}} height="20"/> -->
   <input type="submit" id="submitBtn" value="valider">
   <br />
   {% if message %}
@@ -29,7 +40,9 @@
   <p class="errorAuth">{{error}}</p>
   {% endif %}
   <br />
-</form><br>
+</form>
+{%endif%}
+<br>
 
 <h2>Activités</h2>
 {%if activitiesInDb%}

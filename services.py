@@ -17,6 +17,14 @@ def setChild(childname):
     db.commit()
     db.close()
 
+def updateChild(id, newChildname):
+    """Create the information of the child"""
+    db = get_db()
+    reqSQL = f"UPDATE Childs SET childname ='{newChildname}' WHERE id = '{id}'  "
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    db.commit()
+    db.close()
 
 def getChilds():
     """read the childs"""
