@@ -1,32 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 
 <h1>Paramètres</h1>
+<form method="post" action="{{ url_for('mode_edition') }}">
+  <button type="submit" class="transparent-button"><img src={{ url_for('static', filename='images/edition.png' )}}
+      height="30" /></button>
+</form>
 <p>Entrer les paramètres pour les calculs</p>
-<p>Modifier ou supprimer les paramètres : <img  src={{ url_for('static', filename='images/edition.png' )}} height="15" />
-  <img src={{ url_for('static', filename='images/supprimer.png' )}} height="15" /></p>
 
 <h2>Enfants</h2>
+
 {%if childsInDb%}
 <ul>
   {%for child in childsInDb%}
+  {%if not isInEditionMode%}
   <li>{{child[1]}}</li>
-  <form method="post" action="/params_supprimer">
-    <input type="child_name" name="child_name" id="child_name" class="inputs" value="{{child[1]}}"><input type="submit" id="submitBtn" value="DEL">
-    <br />
-  </form>
+  {%else%}
+  <li>
+    <form method="post" action="{{ url_for('params_update', item_id=child[0]) }}">
+      <input type="new_child_name" name="new_child_name" id="new_child_name" class="inputs" value="{{child[1]}}">
+      <form method="post" action="{{ url_for('mode_edition') }}">
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/verifier.png' )}} height="15" /></button>
+      </form>
+
+    </form>
+    <form method="post" action="{{ url_for('params_delete', item_id=child[0]) }}">
+      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+          filename='images/supprimer.png' )}} height="15" /></button>
+    </form>
+  </li>
+  {%endif%}
   {%endfor%}
 </ul>
 {%endif%}
 
-<form method="post">
-  <input type="child_name" name="child_name" id="child_name" class="inputs" required><br>
-  <input type="submit" id="submitBtn" value="valider">
-  <br />
-</form>
-
-{%if isInEditionMode==False%}
+{%if not isInEditionMode%}
 <form method="post">
   <label for="child_name">Prénom*</label>
   <input type="child_name" name="child_name" id="child_name" class="inputs" required><br>
@@ -41,7 +52,7 @@
   {% endif %}
   <br />
 </form>
-{%endif%}
+{% endif %}
 <br>
 
 <h2>Activités</h2>
@@ -78,10 +89,10 @@
 {%if usual_activities_in_DB%}
 <ul>
   {%for day, usual_activity_day in usual_activities_in_DB%}
-    <li><strong>{{ Jour(stringToNumber(day)).name }} : </strong></a>
+  <li><strong>{{ Jour(stringToNumber(day)).name }} : </strong></a>
     {% set activities_list = usual_activity_day.split(',') %}
     {%for usual_activity in activities_list%}
-      <a>{{activitiesInDb[stringToNumber(usual_activity)-1][1]}},</a>
+    <a>{{activitiesInDb[stringToNumber(usual_activity)-1][1]}},</a>
 
     {%endfor%}
   </li>

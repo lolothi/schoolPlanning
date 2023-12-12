@@ -1,0 +1,6 @@
+.transparent-button {
+    background-color: transparent;
+    border: none;
+    outline: none; /* Supprime le contour du bouton lorsqu'il est en focus */
+    cursor: pointer; /* Change le curseur pour indiquer que le bouton est cliquable */
+}

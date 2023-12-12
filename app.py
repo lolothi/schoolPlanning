@@ -9,30 +9,43 @@ import functions_help
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
+isInEditionMode = False
+
 @app.route("/")
 def index():
     today = datetime.today()
     print("calendar: ", calendar.monthcalendar(2023, 12))
     return render_template("home.html", today=today)
 
-@app.route("/params_supprimer", methods=["POST", "GET"])
-def params_delete():
-    print('prout')
-    # child_name = request.form.post("child_name")
+@app.route('/mode_edition', methods=["POST"])
+def mode_edition():
+    print('EDITIONMODEchanges')
+    global isInEditionMode
+    if request.method == "POST":
+        if isInEditionMode is False:
+            isInEditionMode=True
+        else:
+            isInEditionMode=False
+    return redirect("/params")
+
+@app.route('/params_delete/<int:item_id>', methods=["POST"])
+def params_delete(item_id):
+    if request.method == "POST":
+        services.deleteChild(item_id)   
+    return redirect("/params")
+
+@app.route('/params_update/<int:item_id>', methods=["POST", "GET"])
+def params_update(item_id):
+    new_child_name = request.form.get("new_child_name")
+    if request.method == "POST":
+        services.updateChild(item_id, new_child_name)
     return redirect("/params")
 
 @app.route("/params", methods=["POST", "GET"])
 def params():
     error = None
     message = None
-    isInEditionMode = False
-
-    # def toggle_edition_mode():
-    #     print('EDITIONMODEchanges')
-    #     if isInEditionMode is False:
-    #         isInEditionMode=True
-    #     else:
-    #         isInEditionMode=False
+    global isInEditionMode
 
     """Child creation"""
     child_name = request.form.get("child_name")
@@ -91,7 +104,7 @@ def params():
         usual_activities_in_DB=usual_activities_in_DB_day_group,
         Jour=Jour,
         stringToNumber=functions_help.stringToNumber,
-        isInEditionMode=isInEditionMode    )
+        isInEditionMode=isInEditionMode   )
 
 
 if __name__ == "__main__":

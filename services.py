@@ -26,6 +26,14 @@ def updateChild(id, newChildname):
     db.commit()
     db.close()
 
+def deleteChild(childId):
+    db = get_db()
+    reqSQL = f"DELETE FROM Childs WHERE id = '{childId}'  "
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    db.commit()
+    db.close()
+
 def getChilds():
     """read the childs"""
     db = get_db()
