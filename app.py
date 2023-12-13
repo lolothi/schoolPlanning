@@ -28,17 +28,35 @@ def mode_edition():
             isInEditionMode=False
     return redirect("/params")
 
-@app.route('/params_delete/<int:item_id>', methods=["POST"])
-def params_delete(item_id):
+@app.route('/child_delete/<int:item_id>', methods=["POST"])
+def child_delete(item_id):
     if request.method == "POST":
         services.deleteChild(item_id)   
     return redirect("/params")
 
-@app.route('/params_update/<int:item_id>', methods=["POST", "GET"])
-def params_update(item_id):
+@app.route('/child_update/<int:item_id>', methods=["POST", "GET"])
+def child_update(item_id):
     new_child_name = request.form.get("new_child_name")
     if request.method == "POST":
         services.updateChild(item_id, new_child_name)
+    return redirect("/params")
+
+@app.route('/activity_delete/<int:item_id>', methods=["POST"])
+def activity_delete(item_id):
+    if request.method == "POST":
+        services.deleteActivity(item_id)   
+    return redirect("/params")
+
+@app.route('/activity_update/<int:item_id>', methods=["POST", "GET"])
+def activity_update(item_id):
+    new_activity = {
+        'name' : request.form.get("new_activity_name"),
+        'time' : request.form.get("new_activity_time"),
+        'price' : request.form.get("new_activity_price"),
+        'comment' : request.form.get("new_activity_comment")
+    }
+    if request.method == "POST":
+        services.updateActivity(item_id, new_activity)
     return redirect("/params")
 
 @app.route("/params", methods=["POST", "GET"])
@@ -52,19 +70,28 @@ def params():
     childsInDb = services.getChilds()
 
     """Activity creation"""
-    activity_name = request.form.get("activity_name")
-    activity_time = request.form.get("activity_time")
-    activity_price = request.form.get("activity_price")
-    activity_comment = request.form.get("activity_comment")
+    activity = {
+        'name' : request.form.get("activity_name"),
+        'time' : request.form.get("activity_time"),
+        'price' : request.form.get("activity_price"),
+        'comment' : request.form.get("activity_comment")
+    }
+    
 
     activitiesInDb = services.getActivities()
 
     """Usual Activities creation"""
-    activity_day = request.form.get("activity_day")
-    usual_activity = request.form.get("usual_activity")
+    usual_activity = {
+        'day' : request.form.get("activity_day"),
+        'activity' : request.form.get("usual_activity")
+    }
+    
 
     # usual_activities_in_DB = services.getUsualActivities()
-    usual_activities_in_DB_day_group = services.getListOfUsualActivitiesGroupByDay()
+    if services.getUsualActivities():
+        usual_activities_in_DB_day_group = services.getListOfUsualActivitiesGroupByDay()
+    else:
+        usual_activities_in_DB_day_group = []
 
     if request.method == "POST":
         if child_name:
@@ -74,19 +101,17 @@ def params():
             except:
                 error = "Erreur dans la création"
 
-        if activity_name:
+        if activity['name']:
             try:
-                services.setActivity(
-                    activity_name, activity_price, activity_time, activity_comment
-                )
+                services.setActivity(activity)
                 message = "Activité créé"
             except:
                 error = "Erreur dans la création"
 
-        if activity_day and usual_activity:
+        if usual_activity['day'] and usual_activity['activity']:
             try:
-                if int(activity_day) > 0 and int(usual_activity) > 0:
-                    services.setUsualActivity(activity_day, usual_activity)
+                if int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0:
+                    services.setUsualActivity(usual_activity)
                     message = "Activité créé"
             except:
                 error = "Erreur dans la création"

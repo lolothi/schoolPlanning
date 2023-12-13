@@ -9,7 +9,6 @@ def get_db():
 
 
 def setChild(childname):
-    """Create the information of the child"""
     db = get_db()
     reqSQL = f"insert into Childs (childname) values ('{childname}')  "
     cur = db.cursor()
@@ -18,7 +17,6 @@ def setChild(childname):
     db.close()
 
 def updateChild(id, newChildname):
-    """Create the information of the child"""
     db = get_db()
     reqSQL = f"UPDATE Childs SET childname ='{newChildname}' WHERE id = '{id}'  "
     cur = db.cursor()
@@ -46,19 +44,36 @@ def getChilds():
         return res
     db.close()
 
+def setActivity(activity):
+    if activity['time'] == "":
+        activity['time'] = 0
+    if activity['comment'] == "":
+        activity['comment']= '-'
 
-def setActivity(activityname, activityprice, activitytime="", activitycomment=""):
-    """Create one activity"""
     db = get_db()
-    reqSQL = f"insert into Activities (activityname, activityprice, activitytime, activitycomment) values ('{activityname}', '{activityprice}', '{activitytime}', '{activitycomment}')  "
+    reqSQL = f"insert into Activities (activityname, activityprice, activitytime, activitycomment) values ('{activity['name']}', '{activity['price']}', '{activity['time']}', '{activity['comment']}')  "
     cur = db.cursor()
     cur.execute(reqSQL)
     db.commit()
     db.close()
 
+def updateActivity(id, activity):
+    db = get_db()
+    reqSQL = f"UPDATE Activities SET activityname = '{activity['name']}', activityprice = '{activity['price']}', activitytime = '{activity['time']}', activitycomment = '{activity['comment']}' WHERE id = '{id}'  "
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    db.commit()
+    db.close()
+
+def deleteActivity(id):
+    db = get_db()
+    reqSQL = f"DELETE FROM Activities WHERE id = '{id}'  "
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    db.commit()
+    db.close()
 
 def getActivities():
-    """read the activities"""
     db = get_db()
     reqSQL = f"select * from Activities"
     cur = db.cursor()
@@ -70,10 +85,9 @@ def getActivities():
     db.close()
 
 
-def setUsualActivity(day, activity_id):
-    """Create one usual activity"""
+def setUsualActivity(usual_activity):
     db = get_db()
-    reqSQL = f"insert into Usualactivities (day, activity_id) values ('{day}', '{activity_id}')  "
+    reqSQL = f"insert into Usualactivities (day, activity_id) values ('{usual_activity['day']}', '{usual_activity['activity']}')  "
     cur = db.cursor()
     cur.execute(reqSQL)
     db.commit()
@@ -81,7 +95,6 @@ def setUsualActivity(day, activity_id):
 
 
 def getUsualActivities():
-    """read the usual activities"""
     db = get_db()
     reqSQL = f"select * from Usualactivities ORDER BY day ASC"
     cur = db.cursor()
@@ -94,7 +107,6 @@ def getUsualActivities():
 
 
 def getListOfUsualActivitiesGroupByDay():
-    """read the usual activities"""
     db = get_db()
     reqSQL = f"SELECT day, GROUP_CONCAT(activity_id) AS activities_list from Usualactivities GROUP BY day"
     cur = db.cursor()
