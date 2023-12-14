@@ -33,7 +33,6 @@ def deleteChild(childId):
     db.close()
 
 def getChilds():
-    """read the childs"""
     db = get_db()
     reqSQL = f"select * from Childs"
     cur = db.cursor()
@@ -51,25 +50,27 @@ def setActivity(activity):
         activity['comment']= '-'
 
     db = get_db()
-    reqSQL = f"insert into Activities (activityname, activityprice, activitytime, activitycomment) values ('{activity['name']}', '{activity['price']}', '{activity['time']}', '{activity['comment']}')  "
+    reqSQL = "INSERT INTO Activities (activityname, activityprice, activitytime, activitycomment) VALUES (?, ?, ?, ?)"
     cur = db.cursor()
-    cur.execute(reqSQL)
+    cur.execute(reqSQL, (activity['name'], activity['price'], activity['time'], activity['comment']))
     db.commit()
     db.close()
 
 def updateActivity(id, activity):
     db = get_db()
-    reqSQL = f"UPDATE Activities SET activityname = '{activity['name']}', activityprice = '{activity['price']}', activitytime = '{activity['time']}', activitycomment = '{activity['comment']}' WHERE id = '{id}'  "
+    reqSQL = "UPDATE Activities SET activityname = ?, activityprice = ?, activitytime = ?, activitycomment = ? WHERE id = ?"
     cur = db.cursor()
-    cur.execute(reqSQL)
+    cur.execute(reqSQL, (activity['name'], activity['price'], activity['time'], activity['comment'], id))
     db.commit()
     db.close()
 
 def deleteActivity(id):
+    if checkExistingUsualactivitiesById(id):
+        deleteUsualActivity(id)
     db = get_db()
-    reqSQL = f"DELETE FROM Activities WHERE id = '{id}'  "
+    reqSQL = "DELETE FROM Activities WHERE id = ?"
     cur = db.cursor()
-    cur.execute(reqSQL)
+    cur.execute(reqSQL, (id,))
     db.commit()
     db.close()
 
@@ -84,12 +85,23 @@ def getActivities():
         return res
     db.close()
 
+def checkNotExistingActivityByName(activity_name):
+    reqSQL = f"select * from Activities WHERE activityname = ?"
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQL, (activity_name,))
+    res = cur.fetchone()
+    if res:
+        return False
+    else:
+        db.close()
+        return True
 
 def setUsualActivity(usual_activity):
     db = get_db()
-    reqSQL = f"insert into Usualactivities (day, activity_id) values ('{usual_activity['day']}', '{usual_activity['activity']}')  "
+    reqSQL = "INSERT INTO Usualactivities (day, activity_id) VALUES (?, ?)"
     cur = db.cursor()
-    cur.execute(reqSQL)
+    cur.execute(reqSQL, (usual_activity['day'], usual_activity['activity']))
     db.commit()
     db.close()
 
@@ -105,10 +117,17 @@ def getUsualActivities():
         return res
     db.close()
 
+def deleteUsualActivity(id):
+    db = get_db()
+    reqSQL = "DELETE FROM Usualactivities WHERE id = ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (id,))
+    db.commit()
+    db.close()
 
 def getListOfUsualActivitiesGroupByDay():
     db = get_db()
-    reqSQL = f"SELECT day, GROUP_CONCAT(activity_id) AS activities_list from Usualactivities GROUP BY day"
+    reqSQL = f"SELECT Usualactivities.id, day, GROUP_CONCAT(activityname) AS activities_name_list from Usualactivities INNER JOIN Activities ON Activities.id = Usualactivities.activity_id GROUP BY day"
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()
@@ -117,6 +136,17 @@ def getListOfUsualActivitiesGroupByDay():
         return res
     db.close()
 
+def checkExistingUsualactivitiesById(id):
+    reqSQL = f"select id from Usualactivities WHERE id = ?"
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQL, (id,))
+    res = cur.fetchall()
+    if res:
+        return True
+    else:
+        db.close()
+        return False
 
 # Connect to DB
 db = get_db()

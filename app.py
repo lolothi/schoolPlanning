@@ -19,7 +19,6 @@ def index():
 
 @app.route('/mode_edition', methods=["POST"])
 def mode_edition():
-    print('EDITIONMODEchanges')
     global isInEditionMode
     if request.method == "POST":
         if isInEditionMode is False:
@@ -53,10 +52,17 @@ def activity_update(item_id):
         'name' : request.form.get("new_activity_name"),
         'time' : request.form.get("new_activity_time"),
         'price' : request.form.get("new_activity_price"),
-        'comment' : request.form.get("new_activity_comment")
+        'comment' : str(request.form.get("new_activity_comment"))
     }
     if request.method == "POST":
         services.updateActivity(item_id, new_activity)
+    return redirect("/params")
+
+@app.route('/usual_activity_delete/<int:item_id>', methods=["POST"])
+def usual_activity_delete(item_id):
+    if request.method == "POST":
+        # services.deleteUsualActivity(item_id)   
+        print('---DELETE')
     return redirect("/params")
 
 @app.route("/params", methods=["POST", "GET"])
@@ -77,7 +83,6 @@ def params():
         'comment' : request.form.get("activity_comment")
     }
     
-
     activitiesInDb = services.getActivities()
 
     """Usual Activities creation"""
@@ -97,14 +102,18 @@ def params():
         if child_name:
             try:
                 services.setChild(child_name)
+
                 message = "Enfant créé"
             except:
                 error = "Erreur dans la création"
 
         if activity['name']:
             try:
-                services.setActivity(activity)
-                message = "Activité créé"
+                if services.checkNotExistingActivityByName(activity['name']):
+                    services.setActivity(activity)
+                    message = "Activité créé"
+                else:
+                    error = "Nom déjà existant"
             except:
                 error = "Erreur dans la création"
 

@@ -6,10 +6,10 @@ childname VARCHAR(30) NOT NULL
 
 CREATE TABLE IF NOT EXISTS Activities (
 id integer primary key autoincrement, 
-activityname VARCHAR(30) NOT NULL,
-activityprice decimal(4,2), 
+activityname VARCHAR(30) UNIQUE NOT NULL,
+activityprice decimal(4,2) NOT NULL, 
 activitytime smallint,
-activitycomment VARCHAR(50) NOT NULL
+activitycomment VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS Usualactivities (

@@ -24,11 +24,11 @@
         value="{{child[1]}}">
       <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
           filename='images/verifier.png' )}} height="15" /></button>
-        </form>
-      <form method="post" action="{{ url_for('child_delete', item_id=child[0]) }}">
-        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-            filename='images/supprimer.png' )}} height="15" /></button>
-      
+    </form>
+    <form method="post" action="{{ url_for('child_delete', item_id=child[0]) }}">
+      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+          filename='images/supprimer.png' )}} height="15" /></button>
+
     </form>
   </li>
   {%endif%}
@@ -64,14 +64,14 @@
   {%else%}
   <li>
     <form method="post" action="{{ url_for('activity_update', item_id=activity[0]) }}">
-      <input type="new_activity_name" name="new_activity_name" id="new_activity_name" class="inputs" size="10" maxlength="30"
-        value="{{activity[1]}}">
-      <input type="new_activity_price" name="new_activity_price" id="new_activity_price" class="inputs" size="3" maxlength="30"
-        value="{{activity[2]}}">
-      <input type="new_activity_time" name="new_activity_time" id="new_activity_time" class="inputs" size="2" maxlength="30"
-        value="{{activity[3]}}">
-      <input type="new_activity_comment" name="new_activity_comment" id="new_activity_comment" class="inputs" size="15" maxlength="50"
-        value="{{activity[4]}}">
+      <input type="new_activity_name" name="new_activity_name" id="new_activity_name" class="inputs" size="10"
+        maxlength="30" value="{{activity[1]}}">
+      <input type="new_activity_price" name="new_activity_price" id="new_activity_price" class="inputs" size="3"
+        maxlength="30" value="{{activity[2]}}">
+      <input type="new_activity_time" name="new_activity_time" id="new_activity_time" class="inputs" size="2"
+        maxlength="30" value="{{activity[3]}}">
+      <input type="new_activity_comment" name="new_activity_comment" id="new_activity_comment" class="inputs" size="15"
+        maxlength="50" value="{{activity[4]}}">
       <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
           filename='images/verifier.png' )}} height="15" /></button>
     </form>
@@ -112,18 +112,26 @@
 <h2>Activités habituelles</h2>
 {%if usual_activities_in_DB%}
 <ul>
-  {%for day, usual_activity_day in usual_activities_in_DB%}
+  {%for id, day, usual_activity_per_day in usual_activities_in_DB%}
   <li><strong>{{ Jour(stringToNumber(day)).name }} : </strong></a>
-    {% set activities_list = usual_activity_day.split(',') %}
+    {% set activities_list = usual_activity_per_day.split(',') %}
     {%for usual_activity in activities_list%}
-    <a>{{activitiesInDb[stringToNumber(usual_activity)-1][1]}},</a>
-
+    <a>{{usual_activity}} 
+      {%if isInEditionMode%}
+      <form method="post" action="{{ url_for('usual_activity_delete', item_id=id) }}">
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/supprimer.png' )}} height="15" /></button>
+      </form>
+      {%endif%}
+      {% if not loop.last %},{% endif %}
+    </a>
     {%endfor%}
   </li>
   {%endfor%}
 </ul>
 {%endif%}
 
+{%if not isInEditionMode%}
 {%if activitiesInDb%}
 <form method="POST">
   <select name="activity_day">
@@ -139,10 +147,12 @@
     {% endfor %}
   </select>
   <input type="submit" id="submitBtn" value="valider">
-</form><br>
+</form>
 {%else%}
 <a>Ajouter une activité</a>
 {%endif%}
+{%endif%}
+<br>
 
 <h2>Jours fériés</h2>
 <!-- {%if activitiesInDb%} -->
