@@ -4,3 +4,15 @@
     outline: none; /* Supprime le contour du bouton lorsqu'il est en focus */
     cursor: pointer; /* Change le curseur pour indiquer que le bouton est cliquable */
 }
+
+.inline-elements {
+    /* display: inline-block;
+    margin-right: 10px; */
+    display: flex;
+    flex-direction: row;
+}
+
+.form-inline-elements {
+    display: inline-block;
+    margin-right: 10px;
+}

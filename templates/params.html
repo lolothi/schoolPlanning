@@ -19,17 +19,20 @@
   <li>{{child[1]}}</li>
   {%else%}
   <li>
-    <form method="post" action="{{ url_for('child_update', item_id=child[0]) }}">
-      <input type="new_child_name" name="new_child_name" id="new_child_name" class="inputs" size="10" maxlength="30"
-        value="{{child[1]}}">
-      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-          filename='images/verifier.png' )}} height="15" /></button>
-    </form>
-    <form method="post" action="{{ url_for('child_delete', item_id=child[0]) }}">
-      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-          filename='images/supprimer.png' )}} height="15" /></button>
+    <div class="inline-elements">
+      <form method="post" action="{{ url_for('child_update', item_id=child[0]) }}">
+        <input type="new_child_name" name="new_child_name" id="new_child_name" class="inputs" size="10" maxlength="30"
+          value="{{child[1]}}">
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/verifier.png' )}} height="15" /></button>
+      </form>
+      <form method="post" action="{{ url_for('child_delete', item_id=child[0]) }}">
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/supprimer.png' )}} height="15" /></button>
 
-    </form>
+      </form>
+    </div>
+
   </li>
   {%endif%}
   {%endfor%}
@@ -37,7 +40,7 @@
 {%endif%}
 
 {%if not isInEditionMode%}
-<form method="post">
+<form method="post" action="{{ url_for('child_create') }}">
   <label for="child_name">Prénom*</label>
   <input type="child_name" name="child_name" id="child_name" class="inputs" required size="10" maxlength="30"><br>
   <input type="submit" id="submitBtn" value="valider">
@@ -63,7 +66,7 @@
       }}</a></li>
   {%else%}
   <li>
-    <form method="post" action="{{ url_for('activity_update', item_id=activity[0]) }}">
+    <div class="inline-elements"><form method="post" action="{{ url_for('activity_update', item_id=activity[0]) }}">
       <input type="new_activity_name" name="new_activity_name" id="new_activity_name" class="inputs" size="10"
         maxlength="30" value="{{activity[1]}}">
       <input type="new_activity_price" name="new_activity_price" id="new_activity_price" class="inputs" size="3"
@@ -78,7 +81,7 @@
     <form method="post" action="{{ url_for('activity_delete', item_id=activity[0]) }}">
       <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
           filename='images/supprimer.png' )}} height="15" /></button>
-    </form>
+    </form></div>
   </li>
   {%endif%}
   {%endfor%}
@@ -86,7 +89,7 @@
 </ul>
 {%endif%}
 {%if not isInEditionMode%}
-<form method="post">
+<form method="post" action="{{ url_for('activity_create') }}">
   <label for="activity_name">Nom*: </label>
   <input type="text" name="activity_name" id="activity_name" class="inputs" size="15" maxlength="30" required><br>
   <label for="activity_price">Tarif/Jour*: </label>
@@ -113,12 +116,14 @@
 {%if usual_activities_in_DB%}
 <ul>
   {%for id, day, usual_activity_per_day in usual_activities_in_DB%}
-  <li><strong>{{ Jour(stringToNumber(day)).name }} : </strong></a>
+  <li>
+    <strong>{{ Jour(stringToNumber(day)).name }} : </strong></a>
     {% set activities_list = usual_activity_per_day.split(',') %}
     {%for usual_activity in activities_list%}
-    <a>{{usual_activity}} 
+    <a>{{usual_activity}}
       {%if isInEditionMode%}
-      <form method="post" action="{{ url_for('usual_activity_delete', item_id=id) }}">
+      <form class="form-inline-elements" method="post" action="{{ url_for('usual_activity_delete', item_id=id) }}">
+        <input type="hidden" name="usual_activity_name" value="{{ usual_activity }}">
         <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
             filename='images/supprimer.png' )}} height="15" /></button>
       </form>
@@ -133,7 +138,7 @@
 
 {%if not isInEditionMode%}
 {%if activitiesInDb%}
-<form method="POST">
+<form method="POST" action="{{ url_for('usual_activity_create') }}">
   <select name="activity_day">
     <option value="0">-- jour* --</option>
     {% for jour in Jour %}
@@ -154,7 +159,8 @@
 {%endif%}
 <br>
 
-<h2>Jours fériés</h2>
+<h2>Jours sans école</h2>
+<h1>Jours fériés</h1>
 <!-- {%if activitiesInDb%} -->
 <ul>
   {%for key, value in JoursFeriesAnneeEnCours.items()%}

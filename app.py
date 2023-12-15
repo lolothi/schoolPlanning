@@ -10,6 +10,8 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 isInEditionMode = False
+error = None
+message = None
 
 @app.route("/")
 def index():
@@ -40,6 +42,22 @@ def child_update(item_id):
         services.updateChild(item_id, new_child_name)
     return redirect("/params")
 
+@app.route('/child_create', methods=["POST"])
+def child_create():
+    global error
+    global message
+
+    child_name = request.form.get("child_name")
+
+    if request.method == "POST":
+        if child_name:
+            try:
+                services.setChild(child_name)
+                message = "Enfant créé"
+            except:
+                error = "Erreur dans la création"
+    return redirect("/params")
+
 @app.route('/activity_delete/<int:item_id>', methods=["POST"])
 def activity_delete(item_id):
     if request.method == "POST":
@@ -58,55 +76,19 @@ def activity_update(item_id):
         services.updateActivity(item_id, new_activity)
     return redirect("/params")
 
-@app.route('/usual_activity_delete/<int:item_id>', methods=["POST"])
-def usual_activity_delete(item_id):
-    if request.method == "POST":
-        # services.deleteUsualActivity(item_id)   
-        print('---DELETE')
-    return redirect("/params")
-
-@app.route("/params", methods=["POST", "GET"])
-def params():
-    error = None
-    message = None
-    global isInEditionMode
-
-    """Child creation"""
-    child_name = request.form.get("child_name")
-    childsInDb = services.getChilds()
-
-    """Activity creation"""
+@app.route('/activity_create', methods=["POST"])
+def activity_create():
+    global error
+    global message
+    
     activity = {
         'name' : request.form.get("activity_name"),
         'time' : request.form.get("activity_time"),
         'price' : request.form.get("activity_price"),
         'comment' : request.form.get("activity_comment")
     }
-    
-    activitiesInDb = services.getActivities()
-
-    """Usual Activities creation"""
-    usual_activity = {
-        'day' : request.form.get("activity_day"),
-        'activity' : request.form.get("usual_activity")
-    }
-    
-
-    # usual_activities_in_DB = services.getUsualActivities()
-    if services.getUsualActivities():
-        usual_activities_in_DB_day_group = services.getListOfUsualActivitiesGroupByDay()
-    else:
-        usual_activities_in_DB_day_group = []
 
     if request.method == "POST":
-        if child_name:
-            try:
-                services.setChild(child_name)
-
-                message = "Enfant créé"
-            except:
-                error = "Erreur dans la création"
-
         if activity['name']:
             try:
                 if services.checkNotExistingActivityByName(activity['name']):
@@ -117,6 +99,26 @@ def params():
             except:
                 error = "Erreur dans la création"
 
+    return redirect("/params")
+
+@app.route('/usual_activity_delete/<int:item_id>', methods=["POST"])
+def usual_activity_delete(item_id):
+    activity_name = request.form.get("usual_activity_name")
+    if request.method == "POST":
+        services.deleteUsualActivityByActivityName(item_id, activity_name)   
+    return redirect("/params")
+
+@app.route('/usual_activity_create', methods=["POST"])
+def usual_activity_create():
+    global error
+    global message
+
+    usual_activity = {
+        'day' : request.form.get("activity_day"),
+        'activity' : request.form.get("usual_activity")
+    }
+
+    if request.method == "POST":
         if usual_activity['day'] and usual_activity['activity']:
             try:
                 if int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0:
@@ -125,7 +127,21 @@ def params():
             except:
                 error = "Erreur dans la création"
 
-    """jours fériés"""
+    return redirect("/params")
+
+@app.route("/params", methods=["POST", "GET"])
+def params():
+    global error
+    global message
+    global isInEditionMode
+
+    childsInDb = services.getChilds()
+    activitiesInDb = services.getActivities()
+    if services.getUsualActivities():
+        usual_activities_in_DB_day_group = services.getListOfUsualActivitiesGroupByDay()
+    else:
+        usual_activities_in_DB_day_group = []
+
     JoursFeriesAnneeEnCours = JoursFeries()
 
     return render_template(

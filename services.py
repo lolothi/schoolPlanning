@@ -64,13 +64,13 @@ def updateActivity(id, activity):
     db.commit()
     db.close()
 
-def deleteActivity(id):
-    if checkExistingUsualactivitiesById(id):
-        deleteUsualActivity(id)
+def deleteActivity(activity_id):
+    if checkExistingUsualactivitiesById(activity_id):
+        deleteUsualActivityByActivityId(activity_id)
     db = get_db()
     reqSQL = "DELETE FROM Activities WHERE id = ?"
     cur = db.cursor()
-    cur.execute(reqSQL, (id,))
+    cur.execute(reqSQL, (activity_id,))
     db.commit()
     db.close()
 
@@ -80,6 +80,17 @@ def getActivities():
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()
+    if res:
+        db.close()
+        return res
+    db.close()
+
+def getActivityByName(activityname):
+    db = get_db()
+    reqSQL = f"select * from Activities WHERE activityname = ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (activityname,))
+    res = cur.fetchone()
     if res:
         db.close()
         return res
@@ -117,11 +128,21 @@ def getUsualActivities():
         return res
     db.close()
 
-def deleteUsualActivity(id):
+def deleteUsualActivityByActivityName(usual_activity_id, activity_name):
+    activity = getActivityByName(activity_name)
+    print('deleteUsualActivity', activity_name, " ", activity, activity[0])
     db = get_db()
-    reqSQL = "DELETE FROM Usualactivities WHERE id = ?"
+    reqSQL = "DELETE FROM Usualactivities WHERE id = ? AND activity_id = ?"
     cur = db.cursor()
-    cur.execute(reqSQL, (id,))
+    cur.execute(reqSQL, (usual_activity_id, activity[0]))
+    db.commit()
+    db.close()
+
+def deleteUsualActivityByActivityId(activity_id):
+    db = get_db()
+    reqSQL = "DELETE FROM Usualactivities WHERE activity_id = ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (activity_id,))
     db.commit()
     db.close()
 
