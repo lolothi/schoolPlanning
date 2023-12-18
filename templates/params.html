@@ -8,7 +8,11 @@
   <button type="submit" class="transparent-button"><img src={{ url_for('static', filename='images/edition.png' )}}
       height="30" /></button>
 </form>
-<p>Entrer les paramètres pour les calculs</p>
+{%if isInEditionMode%}
+<div class="actif">Mode édition actif</div>
+{%else%}
+<p>Entrer les pararamètres pour les calculs</p>
+{%endif%}
 
 <h2>Enfants</h2>
 
@@ -40,20 +44,21 @@
 {%endif%}
 
 {%if not isInEditionMode%}
-<form method="post" action="{{ url_for('child_create') }}">
+<form method="post" action="{{ url_for('child_create') }}" class="inline-elements">
   <label for="child_name">Prénom*</label>
   <input type="child_name" name="child_name" id="child_name" class="inputs" required size="10" maxlength="30"><br>
-  <input type="submit" id="submitBtn" value="valider">
-  <br />
-  {% if message %}
-  <a class="message">{{message}}</a>
-  {% endif %}
-  <br />
-  {% if error %}
-  <p class="errorAuth">{{error}}</p>
-  {% endif %}
+  <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+      filename='images/ajouter.png' )}} height="15" /></button>
   <br />
 </form>
+{% if message %}
+<a class="message">{{message}}</a>
+{% endif %}
+<br />
+{% if error %}
+<p class="errorAuth">{{error}}</p>
+{% endif %}
+<br />
 {% endif %}
 <br>
 
@@ -66,22 +71,24 @@
       }}</a></li>
   {%else%}
   <li>
-    <div class="inline-elements"><form method="post" action="{{ url_for('activity_update', item_id=activity[0]) }}">
-      <input type="new_activity_name" name="new_activity_name" id="new_activity_name" class="inputs" size="10"
-        maxlength="30" value="{{activity[1]}}">
-      <input type="new_activity_price" name="new_activity_price" id="new_activity_price" class="inputs" size="3"
-        maxlength="30" value="{{activity[2]}}">
-      <input type="new_activity_time" name="new_activity_time" id="new_activity_time" class="inputs" size="2"
-        maxlength="30" value="{{activity[3]}}">
-      <input type="new_activity_comment" name="new_activity_comment" id="new_activity_comment" class="inputs" size="15"
-        maxlength="50" value="{{activity[4]}}">
-      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-          filename='images/verifier.png' )}} height="15" /></button>
-    </form>
-    <form method="post" action="{{ url_for('activity_delete', item_id=activity[0]) }}">
-      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-          filename='images/supprimer.png' )}} height="15" /></button>
-    </form></div>
+    <div class="inline-elements">
+      <form method="post" action="{{ url_for('activity_update', item_id=activity[0]) }}">
+        <input type="new_activity_name" name="new_activity_name" id="new_activity_name" class="inputs" size="10"
+          maxlength="30" value="{{activity[1]}}">
+        <input type="new_activity_price" name="new_activity_price" id="new_activity_price" class="inputs" size="3"
+          maxlength="30" value="{{activity[2]}}">
+        <input type="new_activity_time" name="new_activity_time" id="new_activity_time" class="inputs" size="2"
+          maxlength="30" value="{{activity[3]}}">
+        <input type="new_activity_comment" name="new_activity_comment" id="new_activity_comment" class="inputs"
+          size="15" maxlength="50" value="{{activity[4]}}">
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/verifier.png' )}} height="15" /></button>
+      </form>
+      <form method="post" action="{{ url_for('activity_delete', item_id=activity[0]) }}">
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/supprimer.png' )}} height="15" /></button>
+      </form>
+    </div>
   </li>
   {%endif%}
   {%endfor%}
@@ -90,25 +97,29 @@
 {%endif%}
 {%if not isInEditionMode%}
 <form method="post" action="{{ url_for('activity_create') }}">
-  <label for="activity_name">Nom*: </label>
-  <input type="text" name="activity_name" id="activity_name" class="inputs" size="15" maxlength="30" required><br>
-  <label for="activity_price">Tarif/Jour*: </label>
-  <input type="text" name="activity_price" id="activity_price" class="inputs" size="3" maxlength="30" required><br>
-  <label for="activity_time">Durée(h): </label>
-  <input type="number" name="activity_time" id="activity_time" class="inputs" size="2" maxlength="30"><br>
-  <label for="activity_comment">Commentaire: </label>
-  <input type="text" name="activity_comment" id="activity_comment" class="inputs" size="15" maxlength="50"><br>
-  <input type="submit" id="submitBtn" value="valider">
-  <br />
-  {% if message %}
-  <a class="message">{{message}}</a>
-  {% endif %}
-  <br />
-  {% if error %}
-  <p class="errorAuth">{{error}}</p>
-  {% endif %}
+  <div class="inline-elements"><label for="activity_name">Nom*: </label>
+    <input type="text" name="activity_name" id="activity_name" class="inputs" size="10" maxlength="30" required><br>
+    <label for="activity_price">Tarif/Jour*: </label>
+    <input type="text" name="activity_price" id="activity_price" class="inputs" size="3" maxlength="30" required><br>
+  </div>
+  <div class="inline-elements"><label for="activity_time">Durée(h): </label>
+    <input type="number" name="activity_time" id="activity_time" class="inputs" size="2" maxlength="30"><br>
+    <label for="activity_comment">Commentaire: </label>
+    <input type="text" name="activity_comment" id="activity_comment" class="inputs" size="15" maxlength="50"><br>
+    <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+        filename='images/ajouter.png' )}} height="15" /></button>
+  </div>
+
   <br />
 </form>
+{% if message %}
+<a class="message">{{message}}</a>
+{% endif %}
+<br />
+{% if error %}
+<p class="errorAuth">{{error}}</p>
+{% endif %}
+<br />
 {% endif %}
 <br>
 
@@ -151,7 +162,8 @@
     <option value="{{ usual_activity[0] }}">{{ usual_activity[1] }}</option>
     {% endfor %}
   </select>
-  <input type="submit" id="submitBtn" value="valider">
+  <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+    filename='images/ajouter.png' )}} height="15" /></button>
 </form>
 {%else%}
 <a>Ajouter une activité</a>

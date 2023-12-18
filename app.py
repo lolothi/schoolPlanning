@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect
 from datetime import datetime
 import calendar
 import services
-from classes.JoursFeriesClass import JoursFeries, Jour
+from classes.JoursFeriesClass import JoursFeries, Jour, Mois
 import functions_help
 
 
@@ -17,7 +17,7 @@ message = None
 def index():
     today = datetime.today()
     print("calendar: ", calendar.monthcalendar(2023, 12))
-    return render_template("home.html", today=today)
+    return render_template("home.html", today=today, Mois=Mois)
 
 @app.route('/mode_edition', methods=["POST"])
 def mode_edition():

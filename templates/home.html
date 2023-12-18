@@ -10,14 +10,13 @@
 <form action="" method="POST">
     <label for="month">month :</label>
     <select name="month" id="month-select" id="month" required>
-        <option value="">--Please choose an option--</option>
-        <option value="January">Janvier</option>
-        <option value="february">février</option>
-        <option value="March">Mars</option>
+        <option value="0">--Mois*--</option>
+        {%for mois in Mois%}
+        <option value="{{ mois.name}}">{{ mois.name}}</option>
+        {%endfor%}
       </select>
     <label for="year">year :</label>
-    <input type="year" id="year" name="year" value="{{ today.year }}" required><br>
-    <input type="month" id="month" name="month" value="{{ today.month.name }}" required><br>
+    <input type="year" id="year" name="year" value="{{ today.year }}" size="4" maxlength="30" required><br>
     <button type="submit">Add a month</button>
     </form>
 
