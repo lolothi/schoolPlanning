@@ -115,7 +115,8 @@ def usual_activity_create():
 
     usual_activity = {
         'day' : request.form.get("activity_day"),
-        'activity' : request.form.get("usual_activity")
+        'activity' : request.form.get("usual_activity"),
+        'child' : request.form.get("usual_activity_child")
     }
 
     if request.method == "POST":
@@ -135,12 +136,13 @@ def params():
     global message
     global isInEditionMode
 
-    childsInDb = services.getChilds()
+    childrenInDb = services.getChilds()
     activitiesInDb = services.getActivities()
     if services.getUsualActivities():
-        usual_activities_in_DB_day_group = services.getListOfUsualActivitiesGroupByDay()
+        usual_activities_in_DB_day_group = []
     else:
         usual_activities_in_DB_day_group = []
+    print('usual_activities_in_DB_day_group: ', services.getListOfUsualActivitiesGroupByDay())
 
     JoursFeriesAnneeEnCours = JoursFeries()
 
@@ -148,7 +150,7 @@ def params():
         "params.html",
         message=message,
         error=error,
-        childsInDb=childsInDb,
+        childrenInDb=childrenInDb,
         activitiesInDb=activitiesInDb,
         JoursFeriesAnneeEnCours=JoursFeriesAnneeEnCours.dumps(),
         usual_activities_in_DB=usual_activities_in_DB_day_group,

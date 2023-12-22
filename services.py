@@ -109,10 +109,11 @@ def checkNotExistingActivityByName(activity_name):
         return True
 
 def setUsualActivity(usual_activity):
+    print('usual_activity: ', usual_activity)
     db = get_db()
-    reqSQL = "INSERT INTO Usualactivities (day, activity_id) VALUES (?, ?)"
+    reqSQL = "INSERT INTO Usualactivities (day, activity_id, child_id) VALUES (?, ?, ?)"
     cur = db.cursor()
-    cur.execute(reqSQL, (usual_activity['day'], usual_activity['activity']))
+    cur.execute(reqSQL, (usual_activity['day'], usual_activity['activity'], usual_activity['child']))
     db.commit()
     db.close()
 
@@ -128,27 +129,9 @@ def getUsualActivities():
         return res
     db.close()
 
-def deleteUsualActivityByActivityName(usual_activity_id, activity_name):
-    activity = getActivityByName(activity_name)
-    print('deleteUsualActivity', activity_name, " ", activity, activity[0])
-    db = get_db()
-    reqSQL = "DELETE FROM Usualactivities WHERE id = ? AND activity_id = ?"
-    cur = db.cursor()
-    cur.execute(reqSQL, (usual_activity_id, activity[0]))
-    db.commit()
-    db.close()
-
-def deleteUsualActivityByActivityId(activity_id):
-    db = get_db()
-    reqSQL = "DELETE FROM Usualactivities WHERE activity_id = ?"
-    cur = db.cursor()
-    cur.execute(reqSQL, (activity_id,))
-    db.commit()
-    db.close()
-
 def getListOfUsualActivitiesGroupByDay():
     db = get_db()
-    reqSQL = f"SELECT Usualactivities.id, day, GROUP_CONCAT(activityname) AS activities_name_list from Usualactivities INNER JOIN Activities ON Activities.id = Usualactivities.activity_id GROUP BY day"
+    reqSQL = f"SELECT u.id, u.day, '[' || GROUP_CONCAT(json_object('activity', a.activityname, 'child', childname)) || ']' AS activities_and_children from Usualactivities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.id, u.day"
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()
@@ -168,6 +151,24 @@ def checkExistingUsualactivitiesById(id):
     else:
         db.close()
         return False
+
+def deleteUsualActivityByActivityName(usual_activity_id, activity_name):
+    activity = getActivityByName(activity_name)
+    print('deleteUsualActivity', activity_name, " ", activity, activity[0])
+    db = get_db()
+    reqSQL = "DELETE FROM Usualactivities WHERE id = ? AND activity_id = ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (usual_activity_id, activity[0]))
+    db.commit()
+    db.close()
+
+def deleteUsualActivityByActivityId(activity_id):
+    db = get_db()
+    reqSQL = "DELETE FROM Usualactivities WHERE activity_id = ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (activity_id,))
+    db.commit()
+    db.close()
 
 # Connect to DB
 db = get_db()
