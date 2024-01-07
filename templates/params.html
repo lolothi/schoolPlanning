@@ -126,7 +126,7 @@
 <h2>Activités habituelles</h2>
 {%if usual_activities_in_DB%}
 <ul>
-  {%for id, day, usual_activity_per_day, child_id in usual_activities_in_DB%}
+  {%for day, usual_activity_per_day in usual_activities_in_DB%}
   <li>
     <strong>{{ Jour(stringToNumber(day)).name }} : </strong></a>
     {% set activities_list = usual_activity_per_day.split(',') %}

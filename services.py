@@ -109,12 +109,20 @@ def checkNotExistingActivityByName(activity_name):
         return True
 
 def setUsualActivity(usual_activity):
-    print('usual_activity: ', usual_activity)
     db = get_db()
     reqSQL = "INSERT INTO Usualactivities (day, activity_id, child_id) VALUES (?, ?, ?)"
     cur = db.cursor()
     cur.execute(reqSQL, (usual_activity['day'], usual_activity['activity'], usual_activity['child']))
     db.commit()
+    db.close()
+
+def setUsualActivityForAllChildren(usual_activity):
+    reqSQL = "INSERT INTO Usualactivities (day, activity_id, child_id) VALUES (?, ?, ?)"
+    db = get_db()
+    for child in getChilds():
+        cur = db.cursor()
+        cur.execute(reqSQL, (usual_activity['day'], usual_activity['activity'], child[0]))
+        db.commit()
     db.close()
 
 
@@ -131,7 +139,7 @@ def getUsualActivities():
 
 def getListOfUsualActivitiesGroupByDay():
     db = get_db()
-    reqSQL = f"SELECT u.id, u.day, '[' || GROUP_CONCAT(json_object('activity', a.activityname, 'child', childname)) || ']' AS activities_and_children from Usualactivities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.id, u.day"
+    reqSQL = f"SELECT u.day, '[' || GROUP_CONCAT(json_object('id', u.id, 'activity', a.activityname, 'child', childname)) || ']' AS activities_and_children from Usualactivities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.day"
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()

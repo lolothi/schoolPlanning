@@ -121,9 +121,14 @@ def usual_activity_create():
 
     if request.method == "POST":
         if usual_activity['day'] and usual_activity['activity']:
+            print('int(usual_activity["child"])', int(usual_activity["child"]))
             try:
-                if int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0:
+                if int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0 and int(usual_activity["child"]) > 0:
                     services.setUsualActivity(usual_activity)
+                    message = "Activité créé"
+                elif int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0 and int(usual_activity["child"]) == 0:
+
+                    services.setUsualActivityForAllChildren(usual_activity)
                     message = "Activité créé"
             except:
                 error = "Erreur dans la création"
@@ -139,7 +144,7 @@ def params():
     childrenInDb = services.getChilds()
     activitiesInDb = services.getActivities()
     if services.getUsualActivities():
-        usual_activities_in_DB_day_group = []
+        usual_activities_in_DB_day_group = services.getListOfUsualActivitiesGroupByDay()
     else:
         usual_activities_in_DB_day_group = []
     print('usual_activities_in_DB_day_group: ', services.getListOfUsualActivitiesGroupByDay())
