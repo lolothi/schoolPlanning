@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 NAME_DATABASE = "PeriscoDatabase.db"
 
@@ -145,6 +146,9 @@ def getListOfUsualActivitiesGroupByDay():
     res = cur.fetchall()
     if res:
         db.close()
+        for i, (day, activities_json) in enumerate(res):
+            activities_list = json.loads(activities_json)
+            res[i] = (day, activities_list)
         return res
     db.close()
 
@@ -155,6 +159,7 @@ def checkExistingUsualactivitiesById(id):
     cur.execute(reqSQL, (id,))
     res = cur.fetchall()
     if res:
+        db.close()
         return True
     else:
         db.close()

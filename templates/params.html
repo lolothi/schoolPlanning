@@ -129,18 +129,18 @@
   {%for day, usual_activity_per_day in usual_activities_in_DB%}
   <li>
     <strong>{{ Jour(stringToNumber(day)).name }} : </strong></a>
-    {% set activities_list = usual_activity_per_day.split(',') %}
-    {%for usual_activity in activities_list%}
-    <a>{{usual_activity}}
-      {%if isInEditionMode%}
-      <form class="form-inline-elements" method="post" action="{{ url_for('usual_activity_delete', item_id=id) }}">
-        <input type="hidden" name="usual_activity_name" value="{{ usual_activity }}">
-        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-            filename='images/supprimer.png' )}} height="15" /></button>
-      </form>
-      {%endif%}
-      {% if not loop.last %},{% endif %}
-    </a>
+    {%for usual_activity in usual_activity_per_day%}
+
+      <a>{{usual_activity.activity}}({{usual_activity.child}})
+        {%if isInEditionMode%}
+        <form class="form-inline-elements" method="post" action="{{ url_for('usual_activity_delete', item_id=usual_activity.id) }}">
+          <input type="hidden" name="usual_activity_name" value="{{ usual_activity.activity }}">
+          <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+              filename='images/supprimer.png' )}} height="15" /></button>
+        </form>
+        {%endif%}
+        {% if not loop.last %},{% endif %}
+      </a>
     {%endfor%}
   </li>
   {%endfor%}

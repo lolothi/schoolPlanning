@@ -4,6 +4,7 @@ import calendar
 import services
 from classes.JoursFeriesClass import JoursFeries, Jour, Mois
 import functions_help
+import json
 
 
 app = Flask(__name__)
@@ -148,6 +149,12 @@ def params():
     else:
         usual_activities_in_DB_day_group = []
     print('usual_activities_in_DB_day_group: ', services.getListOfUsualActivitiesGroupByDay())
+
+    # usual_activities_in_DB_day_group_test = services.getListOfUsualActivitiesGroupByDay()
+    # for i, (day, activities_json) in enumerate(usual_activities_in_DB_day_group_test):
+    #     activities_list = json.loads(activities_json)
+    #     usual_activities_in_DB_day_group_test[i] = (day, activities_list)
+    # print('TESTS: ', usual_activities_in_DB_day_group_test)
 
     JoursFeriesAnneeEnCours = JoursFeries()
 
