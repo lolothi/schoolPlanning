@@ -7,7 +7,7 @@ class MonthActivities(object):
     def __init__(self, year:int, month:int):
         self.year = int(year)
         self.month = int(month)
-        # set_new_month(self.year, self.month)
+        set_new_month(self.year, self.month)
     
     def set_usual_activities(self):
         

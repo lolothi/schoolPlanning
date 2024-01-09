@@ -25,8 +25,8 @@ def index():
     
     
     if request.method == "POST":
-        print('MONTH: ', Mois(month[0]), year[0])
-        mymonthActivities = MonthActivities(year[0], month[0])
+        print('MONTH: ', Mois[month[0]], year[0])
+        mymonthActivities = MonthActivities(year[0], Mois[month[0]])
         # if set_month_with_usual_activities == True:
         #     mymonthActivities.set_usual_activities
 
