@@ -15,7 +15,14 @@ CREATE TABLE IF NOT EXISTS School_months (
     id integer primary key autoincrement, 
     year integer NOT NULL,
     month integer NOT NULL,
-    payed boolean DEFAULT 0
+    payed boolean DEFAULT 0,
+    price_payed integer,
+    number_of_school_days integer,
+    number_of_activities integer,
+    school_canceled boolean DEFAULT 0,
+    family_canceled boolean DEFAULT 0,
+    strike_canceled boolean DEFAULT 0,
+    UNIQUE(year, month)
 );
 
 CREATE TABLE IF NOT EXISTS Comments (
@@ -40,8 +47,10 @@ CREATE TABLE IF NOT EXISTS Month_activities (
     child_id integer,
     web_validated boolean DEFAULT 0,
     school_canceled boolean DEFAULT 0,
+    family_canceled boolean DEFAULT 0,
+    strike_canceled boolean DEFAULT 0,
     comment_id integer,
-    School_months_id integer,
+    school_months_id integer,
     FOREIGN KEY (activity_id) REFERENCES Activities(id),
     FOREIGN KEY (child_id) REFERENCES Childs(id),
     FOREIGN KEY (School_months_id) REFERENCES School_months(id),

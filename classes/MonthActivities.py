@@ -1,17 +1,25 @@
 from datetime import datetime, date
 import calendar
 from classes.JoursFeriesClass import JoursFeries
-from services_month_activities import set_new_month
+from services_month_activities import set_new_month, set_month_activities
+from services_usual_activity import getListOfUsualActivitiesByActivitiesIdGroupByDay
 
 class MonthActivities(object):
     def __init__(self, year:int, month:int):
         self.year = int(year)
         self.month = int(month)
-        set_new_month(self.year, self.month)
+        self.month_id = set_new_month(self.year, self.month)
     
     def set_usual_activities(self):
-        
-        print('test')
+        print('USUAL_activities', getListOfUsualActivitiesByActivitiesIdGroupByDay())
+        for day in getListOfUsualActivitiesByActivitiesIdGroupByDay():
+            activity_day = day[0]
+            print('activity_day', activity_day)
+            print('find_dates_of_day',self.find_dates_of_day(int(day[0])))
+            for date_of_day in self.find_dates_of_day(int(day[0])):
+                for activity_by_child in day[1]:
+                    print('activity_by_child', activity_by_child)
+                    set_month_activities(date_of_day, activity_by_child['activity_id'], activity_by_child['child_id'], self.month_id, 1)
 
     @property
     def month_holidays_closed(self):

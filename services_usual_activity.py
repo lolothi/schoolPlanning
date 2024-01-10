@@ -46,6 +46,20 @@ def getListOfUsualActivitiesGroupByDay():
         return res
     db.close()
 
+def getListOfUsualActivitiesByActivitiesIdGroupByDay():
+    db = get_db()
+    reqSQL = f"SELECT u.day, '[' || GROUP_CONCAT(json_object('activity_id', a.id, 'child_id', c.id)) || ']' AS activities_and_children from Usual_activities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.day"
+    cur = db.cursor()
+    cur.execute(reqSQL)
+    res = cur.fetchall()
+    if res:
+        db.close()
+        for i, (day, activities_json) in enumerate(res):
+            activities_list = json.loads(activities_json)
+            res[i] = (day, activities_list)
+        return res
+    db.close()
+
 def checkExistingUsualactivitiesById(id):
     reqSQL = f"select id from Usual_activities WHERE id = ?"
     db = get_db()

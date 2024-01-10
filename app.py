@@ -4,6 +4,7 @@ from functions_help import stringToNumber
 import services_activity
 import services_child
 import services_usual_activity
+import services_month_activities
 from classes.JoursFeriesClass import JoursFeries, Jour, Mois
 from classes.MonthActivities import MonthActivities
 import functions_help
@@ -23,14 +24,21 @@ def index():
     year = request.form.get("year"),
     set_month_with_usual_activities = request.form.get("set_month_with_usual_activities")
     
-    
-    if request.method == "POST":
-        print('MONTH: ', Mois[month[0]], year[0])
-        mymonthActivities = MonthActivities(year[0], Mois[month[0]])
-        # if set_month_with_usual_activities == True:
-        #     mymonthActivities.set_usual_activities
+    school_months = services_month_activities.get_months()
 
-    return render_template("home.html", today=datetime.today(), Mois=Mois)
+    if request.method == "POST":
+        # print('MONTH: ', Mois[month[0]], year[0])
+        print('set_month_with_usual_activities', set_month_with_usual_activities)
+
+        try:
+            mymonthActivities = MonthActivities(year[0], Mois[month[0]])
+            if set_month_with_usual_activities == 'on':
+                mymonthActivities.set_usual_activities()
+        except:
+            print("Erreur dans la création")            
+            error = "Erreur dans la création"
+
+    return render_template("home.html", today=datetime.today(), Mois=Mois, school_months=school_months)
 
 @app.route('/mode_edition', methods=["POST"])
 def mode_edition():
