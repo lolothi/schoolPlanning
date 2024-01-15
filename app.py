@@ -24,21 +24,21 @@ def index():
     year = request.form.get("year"),
     set_month_with_usual_activities = request.form.get("set_month_with_usual_activities")
     
-    school_months = services_month_activities.get_months()
-
+    school_details_months = services_month_activities.get_months_with_details()
+    # print('JOURS OUVRES', functions_help.month_business_days(2024, 5))
+    # print('JF_sur joursOUVRé', functions_help.month_holidays_closed(2024, 5))
+    # print('holidays', functions_help.holidays(2024, 1))
     if request.method == "POST":
-        # print('MONTH: ', Mois[month[0]], year[0])
-        print('set_month_with_usual_activities', set_month_with_usual_activities)
 
         try:
             mymonthActivities = MonthActivities(year[0], Mois[month[0]])
+            mymonthActivities.set_month()
             if set_month_with_usual_activities == 'on':
                 mymonthActivities.set_usual_activities()
         except:
-            print("Erreur dans la création")            
             error = "Erreur dans la création"
 
-    return render_template("home.html", today=datetime.today(), Mois=Mois, school_months=school_months)
+    return render_template("home.html", today=datetime.today(), Mois=Mois, school_months=school_details_months)
 
 @app.route('/mode_edition', methods=["POST"])
 def mode_edition():
@@ -142,7 +142,6 @@ def usual_activity_create():
 
     if request.method == "POST":
         if usual_activity['day'] and usual_activity['activity']:
-            print('int(usual_activity["child"])', int(usual_activity["child"]))
             try:
                 if int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0 and int(usual_activity["child"]) > 0:
                     services_usual_activity.setUsualActivity(usual_activity)
@@ -168,11 +167,10 @@ def params():
         usual_activities_in_DB_day_group = services_usual_activity.getListOfUsualActivitiesGroupByDay()
     else:
         usual_activities_in_DB_day_group = []
-    print('usual_activities_in_DB_day_group: ', services_usual_activity.getListOfUsualActivitiesGroupByDay())
  
 
     JoursFeriesAnneeEnCours = JoursFeries()
-    print('JF_list', JoursFeriesAnneeEnCours.to_list())
+    # print('JF_list', JoursFeriesAnneeEnCours.to_list())
     # print('JF_str', JoursFeriesAnneeEnCours.__str__)
     # print('JF_repr', JoursFeriesAnneeEnCours.__repr__)
     # print('JF_dumps', JoursFeriesAnneeEnCours.dumps())

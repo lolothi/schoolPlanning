@@ -9,7 +9,10 @@
 {%if school_months%}
 <ul>
   {%for school_month in school_months%}
-  <li>{{Mois(school_month[2]).name}} {{ school_month[1] }}</li>
+  <li>{{Mois(school_month.month).name}} {{ school_month.year }}
+    <p>Nombres J.école : {{ school_month.school_days }}, Nombres activités : {{ school_month.activities_count }}, prix : {{ school_month.price_activities }}€
+    Absences : {{ school_month.off_days}} , grèves :</p>
+  </li>
   {%endfor%}
 </ul>
 {%endif%}
