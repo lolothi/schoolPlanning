@@ -1,4 +1,33 @@
-# schoolPlanning
+# School Planning
+
+Work in progress...
+
+### Built With
+
+* 🖊️ Markdown
+* 🐙 Github
+* 💻 VsCode
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.
+* Git
+```sh
+sudo apt-get install git
+```
+
+### Installation
+
+Clone the repo
+```sh
+git clone git@github.com:lolothi/schoolPlanning.git
+```
+
+## Usage
+- to calculate the cost of the month with school activities 
+- to check the price with the school bill
+- to keep in memory the special activities, with day off or personnel strike
+
 
 # Installation local use
 On your computer:
@@ -21,7 +50,7 @@ pip install -r ./requirements.txt
 
 ```
 
-# lancer le server
+# Run the server
 On your computer:
 
 ```sh
