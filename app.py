@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, redirect
 from datetime import datetime
-from functions_help import stringToNumber
 import services_activity
 import services_child
 import services_usual_activity
 import services_month_activities
 from classes.JoursFeriesClass import JoursFeries, Jour, Mois
 from classes.MonthActivities import MonthActivities
-import functions_help
+from functions_help import stringToNumber
 
 
 app = Flask(__name__)
@@ -25,9 +24,7 @@ def index():
     set_month_with_usual_activities = request.form.get("set_month_with_usual_activities")
     
     school_details_months = services_month_activities.get_months_with_details()
-    # print('JOURS OUVRES', functions_help.month_business_days(2024, 5))
-    # print('JF_sur joursOUVRé', functions_help.month_holidays_closed(2024, 5))
-    # print('holidays', functions_help.holidays(2024, 1))
+
     if request.method == "POST":
 
         try:
@@ -186,7 +183,7 @@ def params():
         JoursFeriesAnneeEnCours=JoursFeriesAnneeEnCours.dumps(),
         usual_activities_in_DB=usual_activities_in_DB_day_group,
         Jour=Jour,
-        stringToNumber=functions_help.stringToNumber,
+        stringToNumber=stringToNumber,
         isInEditionMode=isInEditionMode   )
 
 

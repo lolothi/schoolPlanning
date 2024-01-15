@@ -10,9 +10,13 @@ def stringToNumber(String_number):
 
 def month_school_days(year, month):
     business_days = month_business_days(year, month)
+    # print('business_days', business_days)
     holidays_closed = set(month_holidays_closed(year, month))
+    print('holidays_closed', holidays_closed)
     holidays_general = set(holidays(year, month))
+    print('holidays_general', holidays_general)
     holidays_dict = {day: True for day in holidays_closed.union(holidays_general)}
+    print('holidays_dict',holidays_dict)
     return [
         school_day
         for school_day in business_days
@@ -23,14 +27,6 @@ def month_school_days(year, month):
 
 def month_holidays_closed(year, month):
     JoursFeriesAnneeEnCours = JoursFeries(year)
-    print(
-        "JF_",
-        [
-            dateJF
-            for dateJF in JoursFeriesAnneeEnCours.to_list()
-            if dateJF.month == month
-        ],
-    )
     return [
         dateJF
         for dateJF in JoursFeriesAnneeEnCours.to_list()
@@ -41,6 +37,7 @@ def month_holidays_closed(year, month):
 # FR : jours ouvrés
 def month_business_days(year, month):
     month_business_days = []
+    print('calendar: ', calendar.monthcalendar(year, month))
     for week in calendar.monthcalendar(year, month):
         for day in week:
             if day != 0 and week.index(day) != 5 and week.index(day) != 6:
