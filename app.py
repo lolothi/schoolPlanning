@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect
 from datetime import datetime
-import services_activity
-import services_child
-import services_usual_activity
-import services_month_activities
+from services.services_activity import getActivities, deleteActivity, updateActivity, setActivity, checkNotExistingActivityByName
+from services.services_child import getChilds, updateChild, deleteChild, setChild
+from services.services_usual_activity import getChilds, getListOfUsualActivitiesGroupByDay, getUsualActivities, setUsualActivity, setUsualActivityForAllChildren, deleteUsualActivityByActivityName
+from services.services_month_activities import get_months_with_details
+from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, Jour, Mois
 from classes.MonthActivities import MonthActivities
 from functions_help import stringToNumber
@@ -23,8 +24,16 @@ def index():
     year = request.form.get("year"),
     set_month_with_usual_activities = request.form.get("set_month_with_usual_activities")
     
-    school_details_months = services_month_activities.get_months_with_details()
+    school_details_months = get_months_with_details()
+    childrenInDb = getChilds()
+    activitiesInDb = getActivities()
 
+    add_to_month_type = [
+        "activité", 
+        "absence enfant",
+        "annulation par école"
+    ]
+    # print('add_to_month_type', add_to_month_type)
     if request.method == "POST":
 
         try:
@@ -35,7 +44,29 @@ def index():
         except:
             error = "Erreur dans la création"
 
-    return render_template("home.html", today=datetime.today(), Mois=Mois, school_months=school_details_months)
+    return render_template("home.html", today=datetime.today(), Mois=Mois, school_months=school_details_months, childrenInDb=childrenInDb, activitiesInDb=activitiesInDb, add_to_month_type=add_to_month_type)
+
+@app.route('/absence_create', methods=["POST", "GET"])
+def absence_create():
+    global error
+    global message
+
+    input_date = request.form.get("input_date")
+    add_to_month_type = request.form.get("add_to_month_type")
+    activity_id = request.form.get("activity")
+    activity_child_id = request.form.get("activity_child")
+
+    print('absence_create',input_date, "/" , add_to_month_type, "/", activity_id, "/" , activity_child_id)
+
+    if request.method == "POST":
+            try:
+                if add_to_month_type == "activité":
+                    set_off_days(input_date, activity_child_id)
+
+                message = "Enfant créé"
+            except:
+                error = "Erreur dans la création"
+    return redirect("/")
 
 @app.route('/mode_edition', methods=["POST"])
 def mode_edition():
@@ -50,14 +81,14 @@ def mode_edition():
 @app.route('/child_delete/<int:item_id>', methods=["POST"])
 def child_delete(item_id):
     if request.method == "POST":
-        services_child.deleteChild(item_id)   
+        deleteChild(item_id)   
     return redirect("/params")
 
 @app.route('/child_update/<int:item_id>', methods=["POST", "GET"])
 def child_update(item_id):
     new_child_name = request.form.get("new_child_name")
     if request.method == "POST":
-        services_child.updateChild(item_id, new_child_name)
+        updateChild(item_id, new_child_name)
     return redirect("/params")
 
 @app.route('/child_create', methods=["POST"])
@@ -70,7 +101,7 @@ def child_create():
     if request.method == "POST":
         if child_name:
             try:
-                services_child.setChild(child_name)
+                setChild(child_name)
                 message = "Enfant créé"
             except:
                 error = "Erreur dans la création"
@@ -79,7 +110,7 @@ def child_create():
 @app.route('/activity_delete/<int:item_id>', methods=["POST"])
 def activity_delete(item_id):
     if request.method == "POST":
-        services_activity.deleteActivity(item_id)   
+        deleteActivity(item_id)   
     return redirect("/params")
 
 @app.route('/activity_update/<int:item_id>', methods=["POST", "GET"])
@@ -91,7 +122,7 @@ def activity_update(item_id):
         'comment' : str(request.form.get("new_activity_comment"))
     }
     if request.method == "POST":
-        services_activity.updateActivity(item_id, new_activity)
+        updateActivity(item_id, new_activity)
     return redirect("/params")
 
 @app.route('/activity_create', methods=["POST"])
@@ -109,8 +140,8 @@ def activity_create():
     if request.method == "POST":
         if activity['name']:
             try:
-                if services_activity.checkNotExistingActivityByName(activity['name']):
-                    services_activity.setActivity(activity)
+                if checkNotExistingActivityByName(activity['name']):
+                    setActivity(activity)
                     message = "Activité créé"
                 else:
                     error = "Nom déjà existant"
@@ -123,7 +154,7 @@ def activity_create():
 def usual_activity_delete(item_id):
     activity_name = request.form.get("usual_activity_name")
     if request.method == "POST":
-        services_usual_activity.deleteUsualActivityByActivityName(item_id, activity_name)   
+        deleteUsualActivityByActivityName(item_id, activity_name)   
     return redirect("/params")
 
 @app.route('/usual_activity_create', methods=["POST"])
@@ -141,11 +172,11 @@ def usual_activity_create():
         if usual_activity['day'] and usual_activity['activity']:
             try:
                 if int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0 and int(usual_activity["child"]) > 0:
-                    services_usual_activity.setUsualActivity(usual_activity)
+                    setUsualActivity(usual_activity)
                     message = "Activité créé"
                 elif int(usual_activity['day']) > 0 and int(usual_activity['activity']) > 0 and int(usual_activity["child"]) == 0:
 
-                    services_usual_activity.setUsualActivityForAllChildren(usual_activity)
+                    setUsualActivityForAllChildren(usual_activity)
                     message = "Activité créé"
             except:
                 error = "Erreur dans la création"
@@ -158,22 +189,15 @@ def params():
     global message
     global isInEditionMode
 
-    childrenInDb = services_child.getChilds()
-    activitiesInDb = services_activity.getActivities()
-    if services_usual_activity.getUsualActivities():
-        usual_activities_in_DB_day_group = services_usual_activity.getListOfUsualActivitiesGroupByDay()
+    childrenInDb = getChilds()
+    activitiesInDb = getActivities()
+    if getUsualActivities():
+        usual_activities_in_DB_day_group = getListOfUsualActivitiesGroupByDay()
     else:
         usual_activities_in_DB_day_group = []
  
-
     JoursFeriesAnneeEnCours = JoursFeries()
-    # print('JF_list', JoursFeriesAnneeEnCours.to_list())
-    # print('JF_str', JoursFeriesAnneeEnCours.__str__)
-    # print('JF_repr', JoursFeriesAnneeEnCours.__repr__)
-    # print('JF_dumps', JoursFeriesAnneeEnCours.dumps())
-    # print('JF_tuple', JoursFeriesAnneeEnCours.to_namedtuple())
     
-
     return render_template(
         "params.html",
         message=message,

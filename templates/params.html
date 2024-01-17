@@ -150,7 +150,7 @@
 {%endif%}
 
 {%if not isInEditionMode%}
-{%if activitiesInDb%}
+{%if activitiesInDb and childrenInDb%}
 <form method="POST" action="{{ url_for('usual_activity_create') }}">
   <select name="activity_day">
     <option value="0">-- jour* --</option>
@@ -174,7 +174,7 @@
     filename='images/ajouter.png' )}} height="15" /></button>
 </form>
 {%else%}
-<a>Ajouter une activité</a>
+<a>Ajouter une activité et un enfant</a>
 {%endif%}
 {%endif%}
 

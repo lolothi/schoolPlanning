@@ -1,5 +1,5 @@
 from datetime import date
-from services_sqlite_db import get_db
+from services.services_sqlite_db import get_db
 from functions_help import month_holidays_closed
 
 # --- school Month ---
@@ -84,7 +84,6 @@ def get_activities_by_month_id(school_months_id:int):
 
 def get_price_by_month_id(school_months_id):
     db = get_db()
-    # reqSQL = "SELECT ma.school_months_id, SUM(a.activity_price) AS total_price FROM Month_activities ma INNER JOIN Activities a ON ma.activity_id = a.id group by ma.school_months_id"
     reqSQL = "SELECT SUM(a.activity_price) FROM Month_activities ma INNER JOIN Activities a ON ma.activity_id = a.id WHERE ma.school_months_id = ? group by ma.school_months_id "
     cur = db.cursor()
     cur.execute(reqSQL, (school_months_id,))
@@ -95,5 +94,4 @@ def get_price_by_month_id(school_months_id):
     else:
         db.close()
         return 0    
-
 

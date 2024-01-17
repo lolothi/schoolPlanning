@@ -1,5 +1,5 @@
-from services_sqlite_db import get_db
-from services_usual_activity import checkExistingUsualactivitiesById, deleteUsualActivityByActivityId
+from services.services_sqlite_db import get_db
+from services.services_usual_activity import checkExistingUsualactivitiesById, deleteUsualActivityByActivityId
 
 def setActivity(activity):
     if activity['time'] == "":

@@ -1,7 +1,6 @@
 import json
-from services_sqlite_db import get_db
-from services_child import getChilds
-# from services_activity import getActivityByName
+from services.services_sqlite_db import get_db
+from services.services_child import getChilds
 
 def setUsualActivity(usual_activity):
     db = get_db()

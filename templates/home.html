@@ -10,8 +10,9 @@
 <ul>
   {%for school_month in school_months%}
   <li>{{Mois(school_month.month).name}} {{ school_month.year }}
-    <p>Nombres J.école : {{ school_month.school_days }}, Nombres activités : {{ school_month.activities_count }}, prix : {{ school_month.price_activities }}€
-    Absences : {{ school_month.off_days}} , grèves :</p>
+    <p>Nombres J.école : {{ school_month.school_days }}, Nombres activités : {{ school_month.activities_count }}, prix :
+      {{ school_month.price_activities }}€
+      Absences : {{ school_month.off_days}} , grèves :</p>
   </li>
   {%endfor%}
 </ul>
@@ -34,5 +35,48 @@
       filename='images/ajouter.png' )}} height="15" /></button>
 </form>
 
+{%if school_months%}
+<form method="post" action="{{ url_for('absence_create') }}" class="inline-elements">
+  <label for="input_date">Date*:</label>
+  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime("%Y-%m-%d") }}" required
+    size="10" maxlength="30">
+  <label for="add_to_month_type">Type*:</label>
+  <select name="add_to_month_type" required>
+    <option value="0">-- choisir --</option>
+    {% for type in add_to_month_type %}
+    <option value="{{ type }}">{{ type }}</option>
+    {% endfor %}
+  </select>
+
+  {%if activitiesInDb and childrenInDb%}
+  <select name="activity">
+    <option value="0">-- activité* --</option>
+    {%for activity in activitiesInDb%}
+    <option value="{{ activity[0] }}">{{ activity[1] }}</option>
+    {% endfor %}
+  </select>
+  <select name="activity_child" required>
+    <option value="0">-- tous --</option>
+    {% for child in childrenInDb %}
+    <option value="{{ child[0] }}">{{ child[1] }}</option>
+    {% endfor %}
+  </select>
+  {% endif %}
+
+  <br>
+  <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+      filename='images/ajouter.png' )}} height="15" /></button>
+  <br />
+</form>
+{% if message %}
+<a class="message">{{message}}</a>
+{% endif %}
+<br />
+{% if error %}
+<p class="errorAuth">{{error}}</p>
+{% endif %}
+{% endif %}
+<br />
+<br>
 
 {% endblock %}

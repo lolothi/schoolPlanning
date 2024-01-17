@@ -1,7 +1,7 @@
 from datetime import date
 import calendar
-from services_month_activities import set_new_month, set_month_activities, check_existing_month, get_activities_by_month_id
-from services_usual_activity import getListOfUsualActivitiesByActivitiesIdGroupByDay
+from services.services_month_activities import set_new_month, set_month_activities, check_existing_month, get_activities_by_month_id
+from services.services_usual_activity import getListOfUsualActivitiesByActivitiesIdGroupByDay
 from functions_help import month_school_days
 
 class MonthActivities(object):
@@ -16,10 +16,6 @@ class MonthActivities(object):
     @property
     def month_calendar(self):
         return calendar.monthcalendar(self.year, self.month)
-        # print("calendar: ", month_calendar)
-        # first_day_in_month = month_calendar[0].index(1)+1
-        # print('first_day_in_month', Jour(first_day_in_month).name)
-        # for week in month_calendar:
     
     @property
     def activities(self):
