@@ -27,13 +27,12 @@ def index():
     school_details_months = get_months_with_details()
     childrenInDb = getChilds()
     activitiesInDb = getActivities()
+    usual_activities_in_DB = getUsualActivities()
 
-    add_to_month_type = [
-        "activité", 
+    month_canceled_type = [
         "absence enfant",
         "annulation par école"
     ]
-    # print('add_to_month_type', add_to_month_type)
     if request.method == "POST":
 
         try:
@@ -44,24 +43,29 @@ def index():
         except:
             error = "Erreur dans la création"
 
-    return render_template("home.html", today=datetime.today(), Mois=Mois, school_months=school_details_months, childrenInDb=childrenInDb, activitiesInDb=activitiesInDb, add_to_month_type=add_to_month_type)
+    return render_template("home.html", today=datetime.today(), Mois=Mois, school_months=school_details_months, childrenInDb=childrenInDb, activitiesInDb=activitiesInDb, usual_activities_in_DB=usual_activities_in_DB, month_canceled_type=month_canceled_type)
 
-@app.route('/absence_create', methods=["POST", "GET"])
-def absence_create():
+@app.route('/day_off_create', methods=["POST", "GET"])
+def day_off_create():
     global error
     global message
 
     input_date = request.form.get("input_date")
-    add_to_month_type = request.form.get("add_to_month_type")
+    month_canceled_type = request.form.get("month_canceled_type")
     activity_id = request.form.get("activity")
     activity_child_id = request.form.get("activity_child")
 
-    print('absence_create',input_date, "/" , add_to_month_type, "/", activity_id, "/" , activity_child_id)
+    print('absence_create',input_date, "/" , month_canceled_type, "/", activity_id, "/" , activity_child_id)
 
     if request.method == "POST":
             try:
-                if add_to_month_type == "activité":
-                    set_off_days(input_date, activity_child_id)
+                if month_canceled_type == "activité":
+                    print('absence_create_ACTIVITY',input_date, "/" , month_canceled_type, "/", activity_id, "/" , activity_child_id)
+                    # set_off_days(input_date, activity_child_id)
+                elif month_canceled_type == "absence enfant":
+                    print('absence_create_absence',input_date, "/" , month_canceled_type, "/", activity_id, "/" , activity_child_id)
+                elif month_canceled_type == "annulation par école":
+                    print('absence_create_annulation',input_date, "/" , month_canceled_type, "/", activity_id, "/" , activity_child_id)
 
                 message = "Enfant créé"
             except:
@@ -191,6 +195,7 @@ def params():
 
     childrenInDb = getChilds()
     activitiesInDb = getActivities()
+    print('activitiesInDb', activitiesInDb)
     if getUsualActivities():
         usual_activities_in_DB_day_group = getListOfUsualActivitiesGroupByDay()
     else:

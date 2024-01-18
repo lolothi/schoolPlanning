@@ -1,5 +1,6 @@
 from services.services_sqlite_db import get_db
 from services.services_usual_activity import checkExistingUsualactivitiesById, deleteUsualActivityByActivityId
+from services.services_month_activities import check_existing_activity_in_month_activities
 
 def setActivity(activity):
     if activity['time'] == "":
@@ -23,18 +24,24 @@ def updateActivity(id, activity):
     db.close()
 
 def deleteActivity(activity_id):
-    if checkExistingUsualactivitiesById(activity_id):
-        deleteUsualActivityByActivityId(activity_id)
-    db = get_db()
-    reqSQL = "DELETE FROM Activities WHERE id = ?"
-    cur = db.cursor()
-    cur.execute(reqSQL, (activity_id,))
-    db.commit()
-    db.close()
+    if check_existing_activity_in_month_activities(activity_id) == False:
+        if checkExistingUsualactivitiesById(activity_id):
+            deleteUsualActivityByActivityId(activity_id)
+        db = get_db()
+        reqSQL = "DELETE FROM Activities WHERE id = ?"
+        cur = db.cursor()
+        cur.execute(reqSQL, (activity_id,))
+        db.commit()
+        db.close()
 
 def getActivities():
     db = get_db()
-    reqSQL = f"select * from Activities"
+    reqSQL = """
+    SELECT a.id, a.activity_name, a.activity_price, a.activity_time, a.activity_comment, CASE WHEN ma.activity_id IS NOT NULL THEN 1 ELSE 0 END used_in_month_activities
+    FROM Activities a
+    LEFT JOIN Month_activities ma ON a.id = ma.activity_id
+    GROUP BY a.id, a.activity_name
+    """
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()

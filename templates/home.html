@@ -10,9 +10,13 @@
 <ul>
   {%for school_month in school_months%}
   <li>{{Mois(school_month.month).name}} {{ school_month.year }}
-    <p>Nombres J.école : {{ school_month.school_days }}, Nombres activités : {{ school_month.activities_count }}, prix :
-      {{ school_month.price_activities }}€
-      Absences : {{ school_month.off_days}} , grèves :</p>
+    {%if school_month.activities_count > 0%}
+    <a class="activity_price">{{ school_month.price_activities }}€</a>
+    {%endif%}
+    <p>Nombres J.école : {{ school_month.school_days }}, Nombres activités : {{ school_month.activities_count }},
+      <!--prix : {{ school_month.price_activities }}€ -->
+      Absences : {{ school_month.off_days}} , grèves :
+    </p>
   </li>
   {%endfor%}
 </ul>
@@ -29,44 +33,65 @@
   </select>
   <label for="year">Année :</label>
   <input type="number" id="year" name="year" value="{{ today.year }}" size="5" maxlength="30" required><br>
-  <label for="set_month_with_usual_activities">Activités habituelles :</label>
+  {%if usual_activities_in_DB%}
+  <label for="set_month_with_usual_activities" disabled>Activités habituelles :</label>
   <input type="checkbox" name="set_month_with_usual_activities" id="set_month_with_usual_activities" checked>
+  {%else%}
+  <label class="grey-text" for="set_month_with_usual_activities" disabled>Activités habituelles :</label>
+  <input type="checkbox" name="set_month_with_usual_activities" id="set_month_with_usual_activities" disabled>
+  {%endif%}
+
   <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
       filename='images/ajouter.png' )}} height="15" /></button>
 </form>
+<br>
 
 {%if school_months%}
-<form method="post" action="{{ url_for('absence_create') }}" class="inline-elements">
+<form method="post" action="{{ url_for('day_off_create') }}"> <!-- class="inline-elements" -->
   <label for="input_date">Date*:</label>
-  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime("%Y-%m-%d") }}" required
+  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime(" %Y-%m-%d") }}" required
     size="10" maxlength="30">
-  <label for="add_to_month_type">Type*:</label>
-  <select name="add_to_month_type" required>
-    <option value="0">-- choisir --</option>
-    {% for type in add_to_month_type %}
-    <option value="{{ type }}">{{ type }}</option>
-    {% endfor %}
-  </select>
 
-  {%if activitiesInDb and childrenInDb%}
-  <select name="activity">
-    <option value="0">-- activité* --</option>
-    {%for activity in activitiesInDb%}
-    <option value="{{ activity[0] }}">{{ activity[1] }}</option>
-    {% endfor %}
-  </select>
-  <select name="activity_child" required>
-    <option value="0">-- tous --</option>
+  {%if childrenInDb%}
+  <select name="activity_child">
+    <option value="0">-- enfant*:tous --</option>
     {% for child in childrenInDb %}
     <option value="{{ child[0] }}">{{ child[1] }}</option>
     {% endfor %}
-  </select>
-  {% endif %}
+    {%else%}
+    <select name="activity_child" disabled>
+      <option value="0">-- enfant*:tous --</option>
+      {% endif %}
+    </select>
+    <br>
+    <p><a>Activité: </a>
+      {%if activitiesInDb%}
+      <select name="activity">
+        <option value="0">-- activité* --</option>
+        {%for activity in activitiesInDb%}
+        <option value="{{ activity[0] }}">{{ activity[1] }}</option>
+        {% endfor %}
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/ajouter.png' )}} height="15" /></button>
+        {%else%}
+        <select name="activity" disabled>
+          <option value="0">-- activité* --</option>
+          {% endif %}
+        </select>
+    </p>
+    <a> OU Annulation: </a>
+    <select name="month_canceled_type" required>
+      <option value="0">-- choisir type*--</option>
+      {% for type in month_canceled_type %}
+      <option value="{{ type }}">{{ type }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+        filename='images/ajouter.png' )}} height="15" /></button>
+    </p>
+    <br>
 
-  <br>
-  <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-      filename='images/ajouter.png' )}} height="15" /></button>
-  <br />
+    <br />
 </form>
 {% if message %}
 <a class="message">{{message}}</a>

@@ -59,6 +59,8 @@ def check_existing_month(year, month):
     else:
         db.close()
         return None
+    
+
 
 # --- Month activities ---
 def set_month_activities(date:date, activity_id:int, child_id:int, School_months_id:int, web_validated=0):
@@ -95,3 +97,28 @@ def get_price_by_month_id(school_months_id):
         db.close()
         return 0    
 
+def check_existing_child_in_month_activities(child_id):
+    reqSQL = f"SELECT * from Month_activities WHERE child_id = ?"
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQL, (child_id,))
+    res = cur.fetchone()
+    if res:
+        db.close()
+        return True
+    else:
+        db.close()
+        return False
+    
+def check_existing_activity_in_month_activities(activity_id):
+    reqSQL = f"SELECT * from Month_activities WHERE activity_id = ?"
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQL, (activity_id,))
+    res = cur.fetchone()
+    if res:
+        db.close()
+        return True
+    else:
+        db.close()
+        return False

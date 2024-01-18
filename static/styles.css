@@ -1,8 +1,41 @@
 .transparent-button {
     background-color: transparent;
     border: none;
-    outline: none; /* Supprime le contour du bouton lorsqu'il est en focus */
-    cursor: pointer; /* Change le curseur pour indiquer que le bouton est cliquable */
+    outline: none; 
+    cursor: pointer;
+}
+
+.transparent-disabled-button {
+    background-color: transparent;
+    border: none;
+    outline: none; 
+    opacity:0.2;
+}
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+  
+  /* Tooltip text */
+.tooltip .tooltiptext {
+visibility: hidden;
+width: 120px;
+background-color: black;
+color: #fff;
+text-align: center;
+padding: 5px 0;
+border-radius: 6px;
+
+/* Position the tooltip text - see examples below! */
+position: absolute;
+z-index: 1;
+}
+  
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+visibility: visible;
 }
 
 .inline-elements {
@@ -13,6 +46,15 @@
 .form-inline-elements {
     display: inline-block;
     margin-right: 10px;
+}
+
+.grey-text {
+    color: grey;
+}
+
+.activity_price {
+    color: blue;
+    font-size: 80%;
 }
 
 .actif {
