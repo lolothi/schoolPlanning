@@ -49,7 +49,7 @@
 {%if school_months%}
 <form method="post" action="{{ url_for('day_off_create') }}"> <!-- class="inline-elements" -->
   <label for="input_date">Date*:</label>
-  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime(" %Y-%m-%d") }}" required
+  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime("%Y-%m-%d") }}" required
     size="10" maxlength="30">
 
   {%if childrenInDb%}
@@ -71,13 +71,17 @@
         {%for activity in activitiesInDb%}
         <option value="{{ activity[0] }}">{{ activity[1] }}</option>
         {% endfor %}
-        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-            filename='images/ajouter.png' )}} height="15" /></button>
-        {%else%}
-        <select name="activity" disabled>
-          <option value="0">-- activité* --</option>
-          {% endif %}
-        </select>
+      </select>
+      <label for="activity_web_validation" disabled>validation Web :</label>
+      <input type="checkbox" name="activity_web_validation" id="activity_web_validation">
+      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+          filename='images/ajouter.png' )}} height="15" /></button>
+      {%else%}
+      <select name="activity" disabled>
+        <option value="0">-- activité* --</option>
+      </select>
+      {% endif %}
+
     </p>
     <a> OU Annulation: </a>
     <select name="month_canceled_type" required>
@@ -86,6 +90,8 @@
       <option value="{{ type }}">{{ type }}</option>
       {% endfor %}
     </select>
+    <label for="day_off_web_validation" disabled>suppression activité Web :</label>
+      <input type="checkbox" name="day_off_web_validation" id="day_off_web_validation">
     <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
         filename='images/ajouter.png' )}} height="15" /></button>
     </p>

@@ -51,16 +51,19 @@ def day_off_create():
     global message
 
     input_date = request.form.get("input_date")
-    month_canceled_type = request.form.get("month_canceled_type")
-    activity_id = request.form.get("activity")
     activity_child_id = request.form.get("activity_child")
+    activity_id = request.form.get("activity")
+    activity_web_validation = request.form.get("activity_web_validation")    
+    month_canceled_type = request.form.get("month_canceled_type")
+    day_off_web_validation = request.form.get("day_off_web_validation")
 
     print('absence_create',input_date, "/" , month_canceled_type, "/", activity_id, "/" , activity_child_id)
 
     if request.method == "POST":
             try:
-                if month_canceled_type == "activité":
+                if activity_id > 0:
                     print('absence_create_ACTIVITY',input_date, "/" , month_canceled_type, "/", activity_id, "/" , activity_child_id)
+
                     # set_off_days(input_date, activity_child_id)
                 elif month_canceled_type == "absence enfant":
                     print('absence_create_absence',input_date, "/" , month_canceled_type, "/", activity_id, "/" , activity_child_id)
@@ -195,7 +198,7 @@ def params():
 
     childrenInDb = getChilds()
     activitiesInDb = getActivities()
-    print('activitiesInDb', activitiesInDb)
+
     if getUsualActivities():
         usual_activities_in_DB_day_group = getListOfUsualActivitiesGroupByDay()
     else:

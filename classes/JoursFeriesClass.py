@@ -12,8 +12,8 @@ class Jour(IntEnum):
     MERCREDI = 3
     JEUDI = 4
     VENDREDI = 5
-    SAMEDI = 6
-    DIMANCHE = 7
+    # SAMEDI = 6
+    # DIMANCHE = 7
 
 class Mois(IntEnum):
     

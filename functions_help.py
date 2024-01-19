@@ -9,6 +9,7 @@ def stringToNumber(String_number):
 
 
 def month_school_days(year, month):
+    """School days by month : monday to friday"""
     business_days = month_business_days(year, month)
     holidays_closed = set(month_holidays_closed(year, month))
     holidays_general = set(holidays(year, month))
@@ -32,6 +33,7 @@ def month_holidays_closed(year, month):
 
 # FR : jours ouvrés
 def month_business_days(year, month):
+    """Business days by month : monday to friday"""
     month_business_days = []
     for week in calendar.monthcalendar(year, month):
         for day in week:

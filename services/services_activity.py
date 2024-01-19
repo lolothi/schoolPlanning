@@ -52,7 +52,7 @@ def getActivities():
 
 def getActivityByName(activity_name):
     db = get_db()
-    reqSQL = f"select * from Activities WHERE activity_name = ?"
+    reqSQL = "select * from Activities WHERE activity_name = ?"
     cur = db.cursor()
     cur.execute(reqSQL, (activity_name,))
     res = cur.fetchone()
@@ -62,7 +62,7 @@ def getActivityByName(activity_name):
     db.close()
 
 def checkNotExistingActivityByName(activity_name):
-    reqSQL = f"select * from Activities WHERE activity_name = ?"
+    reqSQL = "select * from Activities WHERE activity_name = ?"
     db = get_db()
     cur = db.cursor()
     cur.execute(reqSQL, (activity_name,))
