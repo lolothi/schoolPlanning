@@ -1,5 +1,6 @@
 from datetime import date
 from services.services_sqlite_db import get_db
+from services.services_child import getChilds
 from functions_help import month_holidays_closed
 
 # --- school Month ---
@@ -65,12 +66,21 @@ def check_existing_month(year, month):
 
 # --- Month activities ---
     # TO-DO : delete School_months_id
-def set_month_activities(date:date, activity_id:int, child_id:int, School_months_id:int=0, web_validated=0):
+def set_month_activity(date:date, activity_id:int, child_id:int, School_months_id:int=0, web_validated=0):
     db = get_db()
     reqSQL = "INSERT INTO Month_activities (date, activity_id, child_id, school_months_id, web_validated) VALUES (?, ?, ?, ?, ?)"
     cur = db.cursor()
     cur.execute(reqSQL, (date, activity_id, child_id, School_months_id, web_validated,))
     db.commit()
+    db.close()
+
+def set_month_activity_for_all_children(date:date, activity_id:int, School_months_id:int=0, web_validated=0):   
+    reqSQL = "INSERT INTO Month_activities (date, activity_id, child_id, school_months_id, web_validated) VALUES (?, ?, ?, ?, ?)"
+    db = get_db()
+    for child in getChilds():
+        cur = db.cursor()
+        cur.execute(reqSQL, (date, activity_id, child[0], School_months_id, web_validated,))
+        db.commit()
     db.close()
 
 # def get_activities_by_month_id(school_months_id:int):
@@ -88,9 +98,9 @@ def set_month_activities(date:date, activity_id:int, child_id:int, School_months
     
 def get_activities_by_month(year, month):
     db = get_db()
-    reqSQL = f"SELECT id, date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled, comment_id from Month_activities WHERE {year}-{month}-01 <= date < {year}-{month+1}-01"
+    reqSQL = "SELECT id, date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled, comment_id from Month_activities WHERE date BETWEEN ? AND ?"
     cur = db.cursor()
-    cur.execute(reqSQL,)
+    cur.execute(reqSQL, (f"{year}-{month}-01", f"{year}-{month+1}-01"))
     res = cur.fetchall()
     if res:
         db.close()
@@ -101,9 +111,9 @@ def get_activities_by_month(year, month):
 
 def get_price_by_month(year, month):
     db = get_db()
-    reqSQL = f"SELECT SUM(activity_price) FROM Month_activities WHERE {year}-{month}-01 <= date < {year}-{month+1}-01 "
+    reqSQL = f"SELECT SUM(activity_price) FROM Month_activities WHERE date BETWEEN ? AND ? GROUP BY date"
     cur = db.cursor()
-    cur.execute(reqSQL,)
+    cur.execute(reqSQL, (f"{year}-{month}-01", f"{year}-{month+1}-01"))
     res = cur.fetchall()
     if res:
         db.close()

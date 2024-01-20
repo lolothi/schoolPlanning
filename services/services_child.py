@@ -1,5 +1,4 @@
 from services.services_sqlite_db import get_db
-from services.services_month_activities import check_existing_child_in_month_activities
 
 
 def setChild(child_name):
@@ -44,3 +43,16 @@ def getChilds():
         db.close()
         return res
     db.close()
+
+def check_existing_child_in_month_activities(child_id):
+    reqSQL = "SELECT * from Month_activities WHERE child_id = ?"
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQL, (child_id,))
+    res = cur.fetchone()
+    if res:
+        db.close()
+        return True
+    else:
+        db.close()
+        return False

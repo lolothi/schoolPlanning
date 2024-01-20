@@ -51,7 +51,9 @@
   <label for="input_date">Date*:</label>
   <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime("%Y-%m-%d") }}" required
     size="10" maxlength="30">
-
+    {% if message %}
+      <a class="message">{{message_date}}</a>
+    {% endif %}
   {%if childrenInDb%}
   <select name="activity_child">
     <option value="0">-- enfant*:tous --</option>
@@ -72,7 +74,7 @@
         <option value="{{ activity[0] }}">{{ activity[1] }}</option>
         {% endfor %}
       </select>
-      <label for="activity_web_validation" disabled>validation Web :</label>
+      <label for="activity_web_validation">validation Web :</label>
       <input type="checkbox" name="activity_web_validation" id="activity_web_validation">
       <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
           filename='images/ajouter.png' )}} height="15" /></button>
@@ -90,7 +92,7 @@
       <option value="{{ type }}">{{ type }}</option>
       {% endfor %}
     </select>
-    <label for="day_off_web_validation" disabled>suppression activité Web :</label>
+    <label for="day_off_web_validation">suppression activité Web :</label>
       <input type="checkbox" name="day_off_web_validation" id="day_off_web_validation">
     <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
         filename='images/ajouter.png' )}} height="15" /></button>
@@ -109,5 +111,14 @@
 {% endif %}
 <br />
 <br>
+
+<script>
+  var input_date = document.getElementById("input_date");
+  input_date.addEventListener("input", function() {
+    console.log(input_date.value);
+  });
+</script>
+
+
 
 {% endblock %}
