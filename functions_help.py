@@ -7,13 +7,12 @@ from vacances_scolaires_france import SchoolHolidayDates
 def stringToNumber(String_number):
     return int(String_number)
 
-
 def month_school_days(year, month):
     """School days by month : monday to friday"""
     business_days = month_business_days(year, month)
-    holidays_closed = set(month_holidays_closed(year, month))
+    public_holidays = set(month_public_holidays(year, month))
     holidays_general = set(holidays(year, month))
-    holidays_dict = {day: True for day in holidays_closed.union(holidays_general)}
+    holidays_dict = {day: True for day in public_holidays.union(holidays_general)}
     return [
         school_day
         for school_day in business_days
@@ -21,8 +20,16 @@ def month_school_days(year, month):
         and not holidays_dict.get(school_day, False)
     ]
 
+# def month_school_days(year, month):
+#     school_days_test = {}
+#     for day in business_days:
+#         if day in public_holidays or day in holidays_general:
+#             school_days_test[day] = "day_off"
+#         else:
+#             school_days_test[day] = "school" 
+#     print('---school_days_test : ', school_days_test)
 
-def month_holidays_closed(year, month):
+def month_public_holidays(year, month):
     JoursFeriesAnneeEnCours = JoursFeries(year)
     return [
         dateJF
@@ -39,6 +46,26 @@ def month_business_days(year, month):
         for day in week:
             if day != 0 and week.index(day) != 5 and week.index(day) != 6:
                 month_business_days.append(date(year, month, day))
+    return month_business_days
+
+def month_days(year, month):
+    """Business days by month : monday to friday"""
+    public_holidays = set(month_public_holidays(year, month))
+    holidays_general = set(holidays(year, month))
+    # holidays_dict = {day: True for day in public_holidays.union(holidays_general)}
+    month_business_days = {}
+    for week in calendar.monthcalendar(year, month):
+        for day in week:
+            if day != 0:
+                month_day = date(year, month, day)
+                if month_day in public_holidays:
+                    month_business_days[month_day] = {'week_day': week.index(day)+1, 'type': 'public_holiday'}
+                elif month_day in holidays_general:
+                    month_business_days[month_day] = {'week_day': week.index(day)+1, 'type': 'school_holiday'}
+                elif week.index(day) != 5 and week.index(day) != 6:
+                    month_business_days[month_day] = {'week_day': week.index(day)+1, 'type': 'school_day'}
+                else:
+                    month_business_days[month_day] = {'week_day': week.index(day)+1, 'type': 'off'}
     return month_business_days
 
 

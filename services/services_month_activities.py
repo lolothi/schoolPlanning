@@ -1,7 +1,8 @@
 from datetime import date
+import calendar
 from services.services_sqlite_db import get_db
 from services.services_child import getChilds
-from functions_help import month_holidays_closed
+from functions_help import month_public_holidays, holidays
 
 # --- school Month ---
 def set_new_month(year, month, school_days=None):
@@ -42,7 +43,7 @@ def get_months_with_details():
                 "school_days": acitivity_in_month[4],
                 "activities_count": len(get_activities_by_month(acitivity_in_month[1], acitivity_in_month[2])),
                 "price_activities": get_price_by_month_id(acitivity_in_month[0]),
-                "off_days": len(month_holidays_closed(acitivity_in_month[1], acitivity_in_month[2])), #a finaliser,
+                "off_days": len(month_public_holidays(acitivity_in_month[1], acitivity_in_month[2])), #a finaliser,
                 "school_off_days": acitivity_in_month[0], #a finaliser,
             }
             res_with_details.append(result_dict)
@@ -82,26 +83,38 @@ def set_month_activity_for_all_children(date:date, activity_id:int, School_month
         cur.execute(reqSQL, (date, activity_id, child[0], School_months_id, web_validated,))
         db.commit()
     db.close()
-
-# def get_activities_by_month_id(school_months_id:int):
-#     db = get_db()
-#     reqSQL = "SELECT * from Month_activities WHERE school_months_id = ?"
-#     cur = db.cursor()
-#     cur.execute(reqSQL, (school_months_id,))
-#     res = cur.fetchall()
-#     if res:
-#         db.close()
-#         return res
-#     else:
-#         db.close()
-#         return []
     
 def get_activities_by_month(year, month):
     db = get_db()
+    month_str = str(month).zfill(2)
+    last_day = calendar.monthrange(year, month)[1]
     reqSQL = "SELECT id, date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled, comment_id from Month_activities WHERE date BETWEEN ? AND ?"
     cur = db.cursor()
-    cur.execute(reqSQL, (f"{year}-{month}-01", f"{year}-{month+1}-01"))
+    cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()
+    print('get_activities_by_month',f"{year}-{month}-01", f"{year}-{month}-{last_day}", res)
+    if res:
+        db.close()
+        return res
+    else:
+        db.close()
+        return []
+    
+def get_activities_dates_by_month_without_holidays(year, month):
+    public_holidays = set(month_public_holidays(year, month))
+    holidays_general = set(holidays(year, month))
+    holidays_dict = {day: True for day in public_holidays.union(holidays_general)}
+
+    db = get_db()
+    month_str = str(month).zfill(2)
+    last_day = calendar.monthrange(year, month)[1]
+    reqSQL = "SELECT date from Month_activities WHERE date BETWEEN ? AND ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
+    res = cur.fetchall()
+    
+    activities_dates_by_month_without_holidays = [activity for activity in res ]
+    print('get_activities_TESTS',f"{year}-{month}-01", f"{year}-{month}-{last_day}", activities_dates_by_month_without_holidays)
     if res:
         db.close()
         return res
@@ -111,7 +124,7 @@ def get_activities_by_month(year, month):
 
 def get_price_by_month(year, month):
     db = get_db()
-    reqSQL = f"SELECT SUM(activity_price) FROM Month_activities WHERE date BETWEEN ? AND ? GROUP BY date"
+    reqSQL = "SELECT SUM(activity_price) FROM Month_activities WHERE date BETWEEN ? AND ? GROUP BY date"
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month}-01", f"{year}-{month+1}-01"))
     res = cur.fetchall()

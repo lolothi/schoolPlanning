@@ -19,12 +19,9 @@ class MonthActivities(object):
         return get_activities_by_month(self.year, self.month)
 
     def set_month(self):
-        print('set_month')
         if not check_existing_month(self.year, self.month):
-            print('set_month_NOT_EXISTING')
             set_new_month(self.year, self.month, len(self.school_days_in_month))
         else:
-            print('set_month_EXISTING')
             check_existing_month(self.year, self.month)
 
     def set_usual_activities(self):
@@ -47,9 +44,6 @@ class MonthActivities(object):
             return True
         else:
             return False
-
-    def set_activitiy(activity):
-        print('CLASS_usual_activities', activity)
 
     
 

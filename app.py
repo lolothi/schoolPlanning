@@ -19,12 +19,12 @@ from services.services_usual_activity import (
 from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
-    set_month_activity_for_all_children,
+    set_month_activity_for_all_children, get_activities_by_month, get_activities_dates_by_month_without_holidays
 )
 from services.services_off_days import set_off_days, set_off_days_for_all_children
 from classes.JoursFeriesClass import JoursFeries, Jour, Mois
 from classes.MonthActivities import MonthActivities
-from functions_help import stringToNumber
+from functions_help import stringToNumber, month_days
 
 
 app = Flask(__name__)
@@ -121,6 +121,22 @@ def day_off_create():
             # TODO a GERER les erreurs et surtout informer cette erreur de date !!
 
     return redirect("/")
+
+
+@app.route("/mois/<int:item_id>", methods=["POST", "GET"])
+def mois(item_id):
+    
+    month_year = request.form.get("month_year")
+    month = request.form.get("month")
+
+    # print(month_days(int(month_year), int(month)))
+    print('get_activities_by_month: ', get_activities_by_month(int(month_year), int(month)))
+    print('get_activities_dates_by_month_without_holidays: ', get_activities_dates_by_month_without_holidays(int(month_year), int(month)))
+
+    if request.method == "POST":
+        print("POST", item_id)
+
+    return render_template("month.html", month_id=item_id , Mois=Mois, mymonthActivities = MonthActivities(month_year, month))
 
 
 @app.route("/mode_edition", methods=["POST"])

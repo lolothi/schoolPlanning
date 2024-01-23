@@ -6,10 +6,18 @@
 <h1>Calculs factures Périscolaire</h1>
 <br>
 
+
+
+
+
 {%if school_months%}
 <ul>
   {%for school_month in school_months%}
-  <li>{{Mois(school_month.month).name}} {{ school_month.year }}
+  <li><form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
+    <input type="hidden" name="month_year" value="{{ school_month.year }}">
+    <input type="hidden" name="month" value="{{ school_month.month }}">
+  <button type="submit" id="submitBtn" class="transparent-button">{{Mois(school_month.month).name}} {{ school_month.year }}</button>
+</form>
     {%if school_month.activities_count > 0%}
     <a class="activity_price">{{ school_month.price_activities }}€</a>
     {%endif%}
