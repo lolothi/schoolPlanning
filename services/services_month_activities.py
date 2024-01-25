@@ -68,6 +68,7 @@ def check_existing_month(year, month):
 # --- Month activities ---
     # TO-DO : delete School_months_id
 def set_month_activity(date:date, activity_id:int, child_id:int, School_months_id:int=0, web_validated=0):
+    print('--set_month_activity--: ', date, activity_id)
     db = get_db()
     reqSQL = "INSERT INTO Month_activities (date, activity_id, child_id, school_months_id, web_validated) VALUES (?, ?, ?, ?, ?)"
     cur = db.cursor()
@@ -92,7 +93,7 @@ def get_activities_by_month(year, month):
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()
-    print('get_activities_by_month',f"{year}-{month}-01", f"{year}-{month}-{last_day}", res)
+    # print('get_activities_by_month',f"{year}-{month}-01", f"{year}-{month}-{last_day}", res)
     if res:
         db.close()
         return res

@@ -22,7 +22,7 @@ from services.services_month_activities import (
     set_month_activity_for_all_children, get_activities_by_month, get_activities_dates_by_month_without_holidays
 )
 from services.services_off_days import set_off_days, set_off_days_for_all_children
-from classes.JoursFeriesClass import JoursFeries, Jour, Mois
+from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
 from classes.MonthActivities import MonthActivities
 from functions_help import stringToNumber, month_days
 
@@ -129,14 +129,14 @@ def mois(item_id):
     month_year = request.form.get("month_year")
     month = request.form.get("month")
 
-    # print(month_days(int(month_year), int(month)))
-    print('get_activities_by_month: ', get_activities_by_month(int(month_year), int(month)))
-    print('get_activities_dates_by_month_without_holidays: ', get_activities_dates_by_month_without_holidays(int(month_year), int(month)))
+    # print('month_days', month_days(int(month_year), int(month)))
+    # print('get_activities_by_month: ', get_activities_by_month(int(month_year), int(month)))
+    # print('get_activities_dates_by_month_without_holidays: ', get_activities_dates_by_month_without_holidays(int(month_year), int(month)))
 
     if request.method == "POST":
         print("POST", item_id)
 
-    return render_template("month.html", month_id=item_id , Mois=Mois, mymonthActivities = MonthActivities(month_year, month))
+    return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber)
 
 
 @app.route("/mode_edition", methods=["POST"])
@@ -294,7 +294,7 @@ def params():
         activitiesInDb=activitiesInDb,
         JoursFeriesAnneeEnCours=JoursFeriesAnneeEnCours.dumps(),
         usual_activities_in_DB=usual_activities_in_DB_day_group,
-        Jour=Jour,
+        Jour=School_day,
         stringToNumber=stringToNumber,
         isInEditionMode=isInEditionMode,
     )

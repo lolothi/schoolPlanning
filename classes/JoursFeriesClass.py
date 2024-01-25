@@ -6,7 +6,7 @@ import json
 from collections import namedtuple
 import serpy
 
-class Jour(IntEnum):
+class School_day(IntEnum):
     LUNDI = 1
     MARDI= 2
     MERCREDI = 3
@@ -14,6 +14,15 @@ class Jour(IntEnum):
     VENDREDI = 5
     # SAMEDI = 6
     # DIMANCHE = 7
+
+class Jour(IntEnum):
+    LUNDI = 1
+    MARDI= 2
+    MERCREDI = 3
+    JEUDI = 4
+    VENDREDI = 5
+    SAMEDI = 6
+    DIMANCHE = 7
 
 class Mois(IntEnum):
     

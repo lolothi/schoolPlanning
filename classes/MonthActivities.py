@@ -2,13 +2,14 @@ from datetime import date
 import calendar
 from services.services_month_activities import set_new_month, set_month_activity, check_existing_month, get_activities_by_month
 from services.services_usual_activity import getListOfUsualActivitiesByActivitiesIdGroupByDay
-from functions_help import month_school_days
+from functions_help import month_days
 
 class MonthActivities(object):
     def __init__(self, year:int, month:int):
         self.year = int(year)
         self.month = int(month)
-        self.school_days_in_month = month_school_days(self.year, self.month)
+        # self.school_days_in_month = month_school_days(self.year, self.month)
+        self.school_days_in_month = month_days(self.year, self.month)
 
     @property
     def month_calendar(self):
@@ -26,10 +27,14 @@ class MonthActivities(object):
 
     def set_usual_activities(self):
         for day in getListOfUsualActivitiesByActivitiesIdGroupByDay():
+            # print('getListOfUsualActivitiesByActivitiesIdGroupByDay: ', getListOfUsualActivitiesByActivitiesIdGroupByDay())
+            # print('--day--', day)
             for date_of_day in self.find_dates_of_day(int(day[0])):
+                # print('date_of_day: ', date_of_day)
                 if date_of_day in self.school_days_in_month:
-                    for activity_by_child in day[1]:
-                        set_month_activity(date_of_day, activity_by_child['activity_id'], activity_by_child['child_id'], self.month_id, 1)
+                    print('date_of_day-SCHOOL: ', date_of_day)
+                    # for activity_by_child in day[1]:
+                    #     set_month_activity(date_of_day, activity_by_child['activity_id'], activity_by_child['child_id'], self.month_id, 1)
 
     def find_dates_of_day(self, week_day:int):
         """Find all the dates in month for one day (monday, tuesday ...)"""

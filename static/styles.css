@@ -61,6 +61,13 @@ visibility: visible;
     color: green;
 }
 
+.school_day {
+    color: green;
+}
+.off_day {
+    color: grey;
+}
+
 @media (max-width: 30em) { 
     .inline-elements {
         display: flex;

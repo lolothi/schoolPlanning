@@ -36,6 +36,7 @@ def deleteActivity(activity_id):
 
 def getActivities():
     db = get_db()
+    # ma.activity_id=1 is used to know if activity is NOT POSSIBLE to delete because exists in month_activities
     reqSQL = """
     SELECT a.id, a.activity_name, a.activity_price, a.activity_time, a.activity_comment, CASE WHEN ma.activity_id IS NOT NULL THEN 1 ELSE 0 END used_in_month_activities
     FROM Activities a
