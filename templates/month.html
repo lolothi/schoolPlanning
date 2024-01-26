@@ -6,9 +6,18 @@
 <h1> {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
 <br>
 <ul>
-    {%for day, day_info in mymonthActivities.school_days_in_month.items()%}
+    {%for day, day_info in mymonthActivities.month_calendar.items()%}
         {%if day_info.type == 'school_day'%}
-            <li class="school_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }}</li>
+            <li class="school_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }}
+                {%if day_info.activities%}
+                <ul>
+                    {%for activity in day_info.activities%}
+                    <li>{{ activity.name }} - pour {{ activity.child }} - prix: {{ activity.price }} €</li>
+                    {%endfor%}
+                </ul>
+                {%endif%}
+
+            </li>
         {%elif day_info.type == 'public_holiday'%}
             <li class="off_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }} : J.férié</li>
         {%elif day_info.type == 'school_holiday'%}

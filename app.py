@@ -10,7 +10,7 @@ from services.services_activity import (
 from services.services_child import getChilds, updateChild, deleteChild, setChild
 from services.services_usual_activity import (
     getChilds,
-    getListOfUsualActivitiesGroupByDay,
+    get_list_of_usual_activities_group_by_day,
     getUsualActivities,
     setUsualActivity,
     setUsualActivityForAllChildren,
@@ -19,7 +19,7 @@ from services.services_usual_activity import (
 from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
-    set_month_activity_for_all_children, get_activities_by_month, get_activities_dates_by_month_without_holidays
+    set_month_activity_for_all_children
 )
 from services.services_off_days import set_off_days, set_off_days_for_all_children
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
@@ -44,6 +44,7 @@ def index():
         "set_month_with_usual_activities"
     )
 
+    print(('checkBox', set_month_with_usual_activities))
     school_details_months = get_months_with_details()
     childrenInDb = getChilds()
     activitiesInDb = getActivities()
@@ -55,7 +56,8 @@ def index():
             mymonthActivities = MonthActivities(year[0], Mois[month[0]])
             mymonthActivities.set_month()
             if set_month_with_usual_activities == "on":
-                mymonthActivities.set_usual_activities()
+                print(('YESYESYEScheckBox', set_month_with_usual_activities))
+                mymonthActivities.set_activities_from_usual_activities()
         except:
             error = "Erreur dans la création"
 
@@ -131,7 +133,8 @@ def mois(item_id):
 
     # print('month_days', month_days(int(month_year), int(month)))
     # print('get_activities_by_month: ', get_activities_by_month(int(month_year), int(month)))
-    # print('get_activities_dates_by_month_without_holidays: ', get_activities_dates_by_month_without_holidays(int(month_year), int(month)))
+    # print('get_activities_by_month: ', get_activities_by_month_group_by_day(int(month_year), int(month)))
+    # print('ALL_days_month: ', mymonthActivities.month_calendar)
 
     if request.method == "POST":
         print("POST", item_id)
@@ -280,10 +283,12 @@ def params():
     activitiesInDb = getActivities()
 
     if getUsualActivities():
-        usual_activities_in_DB_day_group = getListOfUsualActivitiesGroupByDay()
+        usual_activities_in_DB_day_group = get_list_of_usual_activities_group_by_day()
     else:
         usual_activities_in_DB_day_group = []
 
+    print('--usual_activities_in_DB_day_group: ', usual_activities_in_DB_day_group)
+    
     JoursFeriesAnneeEnCours = JoursFeries()
 
     return render_template(

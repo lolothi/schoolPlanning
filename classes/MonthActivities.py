@@ -1,48 +1,51 @@
 from datetime import date
 import calendar
-from services.services_month_activities import set_new_month, set_month_activity, check_existing_month, get_activities_by_month
-from services.services_usual_activity import getListOfUsualActivitiesByActivitiesIdGroupByDay
+from services.services_month_activities import set_new_month, check_existing_month, get_activities_by_month, get_activities_by_month_group_by_day, set_month_activity
+from services.services_usual_activity import get_dict_of_usual_activities_group_by_day
 from functions_help import month_days
 
 class MonthActivities(object):
     def __init__(self, year:int, month:int):
         self.year = int(year)
         self.month = int(month)
-        # self.school_days_in_month = month_school_days(self.year, self.month)
         self.school_days_in_month = month_days(self.year, self.month)
+        self.month_activities = get_activities_by_month_group_by_day(self.year, self.month)
+        self.usual_activities = get_dict_of_usual_activities_group_by_day()
 
-    @property
-    def month_calendar(self):
-        return calendar.monthcalendar(self.year, self.month)
+    # @property
+    # def month_calendar(self):
+    #     return calendar.monthcalendar(self.year, self.month)
     
     @property
     def activities(self):
         return get_activities_by_month(self.year, self.month)
 
+    @property
+    def month_calendar(self):
+        activitie_dict = self.school_days_in_month
+        # print('self.month_activities.items(): ',self.month_activities.items())
+        for day, activities in self.month_activities.items():
+            if day in activitie_dict: 
+                # print('day', day, activities)
+                activitie_dict[day]['activities'] = activities
+        # print('activitie_dict: ', activitie_dict)
+        return activitie_dict
+
     def set_month(self):
+        month_days_filtered = {month_day: month_day_info for month_day, month_day_info in self.school_days_in_month.items() if month_day_info['type'] == 'school_day'}
         if not check_existing_month(self.year, self.month):
-            set_new_month(self.year, self.month, len(self.school_days_in_month))
+            set_new_month(self.year, self.month, len(month_days_filtered))
         else:
             check_existing_month(self.year, self.month)
 
-    def set_usual_activities(self):
-        for day in getListOfUsualActivitiesByActivitiesIdGroupByDay():
-            # print('getListOfUsualActivitiesByActivitiesIdGroupByDay: ', getListOfUsualActivitiesByActivitiesIdGroupByDay())
-            # print('--day--', day)
-            for date_of_day in self.find_dates_of_day(int(day[0])):
-                # print('date_of_day: ', date_of_day)
-                if date_of_day in self.school_days_in_month:
-                    print('date_of_day-SCHOOL: ', date_of_day)
-                    # for activity_by_child in day[1]:
-                    #     set_month_activity(date_of_day, activity_by_child['activity_id'], activity_by_child['child_id'], self.month_id, 1)
-
-    def find_dates_of_day(self, week_day:int):
-        """Find all the dates in month for one day (monday, tuesday ...)"""
-        day_list_of_dates = []
-        for week in self.month_calendar:
-            if week[week_day-1] != 0:
-                day_list_of_dates.append(date(self.year, self.month, week[week_day-1]))
-        return day_list_of_dates
+    def set_activities_from_usual_activities(self):
+        for activities_day, activities in self.usual_activities.items():
+            school_days_in_month_filtered = {month_day: month_day_info for month_day, month_day_info in self.school_days_in_month.items() if month_day_info['week_day'] == int(activities_day)}
+            print('school_days_in_month_filtered', school_days_in_month_filtered)
+            for month_day, activities_filtered in school_days_in_month_filtered.items() :
+                for activity_by_child in activities:
+                    print('--set_activities: ', month_day, activity_by_child)
+                    set_month_activity(month_day, activity_by_child['activity_id'], activity_by_child['child_id'])
     
     def check_month_school_date(self, month_date):
         if month_date in self.school_days_in_month:

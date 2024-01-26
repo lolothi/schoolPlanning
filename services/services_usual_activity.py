@@ -22,7 +22,7 @@ def setUsualActivityForAllChildren(usual_activity):
 
 def getUsualActivities():
     db = get_db()
-    reqSQL = f"select * from Usual_activities ORDER BY day ASC"
+    reqSQL = "select * from Usual_activities ORDER BY day ASC"
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()
@@ -31,9 +31,10 @@ def getUsualActivities():
         return res
     db.close()
 
-def getListOfUsualActivitiesGroupByDay():
+def get_list_of_usual_activities_group_by_day():
+    # Display the usual activities list in parameters template, group by day
     db = get_db()
-    reqSQL = f"SELECT u.day, '[' || GROUP_CONCAT(json_object('id', u.id, 'activity', a.activity_name, 'child', child_name)) || ']' AS activities_and_children from Usual_activities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.day"
+    reqSQL = "SELECT u.day, '[' || GROUP_CONCAT(json_object('id', u.id, 'activity', a.activity_name, 'child', child_name)) || ']' AS activities_and_children from Usual_activities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.day"
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()
@@ -45,22 +46,19 @@ def getListOfUsualActivitiesGroupByDay():
         return res
     db.close()
 
-def getListOfUsualActivitiesByActivitiesIdGroupByDay():
+def get_dict_of_usual_activities_group_by_day():
     db = get_db()
-    reqSQL = f"SELECT u.day, '[' || GROUP_CONCAT(json_object('activity_id', a.id, 'child_id', c.id)) || ']' AS activities_and_children from Usual_activities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.day"
+    reqSQL = "SELECT u.day, '[' || GROUP_CONCAT(json_object('activity_id', a.id, 'child_id', c.id)) || ']' AS activities_and_children from Usual_activities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.day"
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()
     if res:
         db.close()
-        for i, (day, activities_json) in enumerate(res):
-            activities_list = json.loads(activities_json)
-            res[i] = (day, activities_list)
-        return res
+        return {week_day : json.loads(activities_json) for i, (week_day, activities_json) in enumerate(res)}
     db.close()
 
 def checkExistingUsualactivitiesById(id):
-    reqSQL = f"select id from Usual_activities WHERE id = ?"
+    reqSQL = "select id from Usual_activities WHERE id = ?"
     db = get_db()
     cur = db.cursor()
     cur.execute(reqSQL, (id,))

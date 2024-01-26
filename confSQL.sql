@@ -51,10 +51,8 @@ CREATE TABLE IF NOT EXISTS Month_activities (
     family_canceled boolean DEFAULT 0,
     strike_canceled boolean DEFAULT 0,
     comment_id integer,
-    school_months_id integer,
     FOREIGN KEY (activity_id) REFERENCES Activities(id),
     FOREIGN KEY (child_id) REFERENCES Childs(id),
-    FOREIGN KEY (School_months_id) REFERENCES School_months(id),
     FOREIGN KEY (comment_id) REFERENCES Comments(id)
 );
 
@@ -64,6 +62,8 @@ CREATE TABLE IF NOT EXISTS off_days (
     child_id integer,
     web_validated boolean DEFAULT 0,
     school_canceled boolean DEFAULT 0,
+    family_canceled boolean DEFAULT 0,
+    strike_canceled boolean DEFAULT 0,
     comment_id integer,
     FOREIGN KEY (child_id) REFERENCES Childs(id),
     FOREIGN KEY (comment_id) REFERENCES Comments(id)
