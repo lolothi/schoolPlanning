@@ -12,7 +12,7 @@
                 {%if day_info.activities%}
                 <ul>
                     {%for activity in day_info.activities%}
-                    <li>{{ activity.name }} - pour {{ activity.child }} - prix: {{ activity.price }} €</li>
+                    <li class="simple-text">{{ activity.name }} - pour {{ activity.child }} - prix: {{ activity.price }} €</li>
                     {%endfor%}
                 </ul>
                 {%endif%}

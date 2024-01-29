@@ -13,17 +13,27 @@
 {%if school_months%}
 <ul>
   {%for school_month in school_months%}
-  <li><form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
-    <input type="hidden" name="month_year" value="{{ school_month.year }}">
-    <input type="hidden" name="month" value="{{ school_month.month }}">
-  <button type="submit" id="submitBtn" class="transparent-button">{{Mois(school_month.month).name}} {{ school_month.year }}</button>
-</form>
+  <li>
+    <form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
+      <input type="hidden" name="month_year" value="{{ school_month.year }}">
+      <input type="hidden" name="month" value="{{ school_month.month }}">
+      <button type="submit" id="submitBtn" class="transparent-button">{{Mois(school_month.month).name}} {{
+        school_month.year }}</button>
+    </form>
     {%if school_month.activities_count > 0%}
     <a class="activity_price">{{ school_month.price_activities }}€</a>
     {%endif%}
-    <p>Nombres J.école : <a class="school_day">{{ school_month.school_days }}</a>, Nombres activités : {{ school_month.activities_count }},
-      <!--prix : {{ school_month.price_activities }}€ -->
-      Absences : {{ school_month.off_days}} , grèves :
+    <p >Nombres J.école : <a class="school_day">{{ school_month.school_days }}</a>, Nombres activités : {{
+      school_month.activities_count }}
+      {%if school_month.off_days > 0%}
+      , Absences : {{ school_month.off_days}}
+      {%endif%}
+      {%if school_month.strike_days > 0%}
+      , grèves : {{ school_month.strike_days}}
+      {%endif%}
+      {%if school_month.school_off_days > 0%}
+      , annulations : {{ school_month.school_off_days}}
+      {%endif%}
     </p>
   </li>
   {%endfor%}
@@ -57,11 +67,11 @@
 {%if school_months%}
 <form method="post" action="{{ url_for('day_off_create') }}"> <!-- class="inline-elements" -->
   <label for="input_date">Date*:</label>
-  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime("%Y-%m-%d") }}" required
+  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime(" %Y-%m-%d") }}" required
     size="10" maxlength="30">
-    {% if message %}
-      <a class="message">{{message_date}}</a>
-    {% endif %}
+  {% if message %}
+  <a class="message">{{message_date}}</a>
+  {% endif %}
   {%if childrenInDb%}
   <select name="activity_child">
     <option value="0">-- enfant*:tous --</option>
@@ -101,7 +111,7 @@
       {% endfor %}
     </select>
     <label for="day_off_web_validation">suppression activité Web :</label>
-      <input type="checkbox" name="day_off_web_validation" id="day_off_web_validation">
+    <input type="checkbox" name="day_off_web_validation" id="day_off_web_validation">
     <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
         filename='images/ajouter.png' )}} height="15" /></button>
     </p>
@@ -122,7 +132,7 @@
 
 <script>
   var input_date = document.getElementById("input_date");
-  input_date.addEventListener("input", function() {
+  input_date.addEventListener("input", function () {
     console.log(input_date.value);
   });
 </script>

@@ -21,7 +21,7 @@ from services.services_month_activities import (
     set_month_activity,
     set_month_activity_for_all_children
 )
-from services.services_off_days import set_off_days, set_off_days_for_all_children
+from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
 from classes.MonthActivities import MonthActivities
 from functions_help import stringToNumber, month_days
@@ -50,7 +50,7 @@ def index():
     activitiesInDb = getActivities()
     usual_activities_in_DB = getUsualActivities()
 
-    month_canceled_type = ["absence enfant", "annulation par école"]
+    month_canceled_type = ["absence enfant", "grève", "annulation par école"]
     if request.method == "POST":
         try:
             mymonthActivities = MonthActivities(year[0], Mois[month[0]])
@@ -106,18 +106,12 @@ def day_off_create():
                         input_date, activity_id, 0, activity_web_validation
                     )
 
+            elif month_canceled_type == "grève":
+                    set_off_days(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=1)
             elif month_canceled_type == "absence enfant":
-                if int(activity_child_id) > 0:
-                    set_off_days(input_date, activity_child_id, day_off_web_validation)
-                else:
-                    set_off_days_for_all_children(input_date, day_off_web_validation)
+                    set_off_days(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=0, family_canceled=1)
             elif month_canceled_type == "annulation par école":
-                if int(activity_child_id) > 0:
-                    set_off_days(
-                        input_date, activity_child_id, day_off_web_validation, 1
-                    )
-                else:
-                    set_off_days_for_all_children(input_date, day_off_web_validation, 1)
+                    set_off_days(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=0, family_canceled=0, school_canceled=1)
         else:
             error_date = "La date choisie n'est pas un jour d'école"
             # TODO a GERER les erreurs et surtout informer cette erreur de date !!
@@ -306,4 +300,5 @@ def params():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_debugger=True, use_reloader=True)
+    # flask run --debug

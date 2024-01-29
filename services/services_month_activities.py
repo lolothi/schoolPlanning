@@ -3,7 +3,7 @@ import calendar
 import json
 from services.services_sqlite_db import get_db
 from services.services_child import getChilds
-from services.services_off_days import get_family_off_days_by_month, get_school_off_days_by_month
+from services.services_off_days import get_family_off_days_by_month, get_strikes_days_by_month, get_school_canceled_by_month
 from functions_help import month_days
 
 # --- school Month ---
@@ -46,7 +46,8 @@ def get_months_with_details():
                 "activities_count": len(get_activities_by_month(acitivity_in_month[1], acitivity_in_month[2])),
                 "price_activities": get_activities_price_by_month(acitivity_in_month[1], acitivity_in_month[2]),
                 "off_days": len(get_family_off_days_by_month(acitivity_in_month[1], acitivity_in_month[2])),
-                "school_off_days": len(get_school_off_days_by_month(acitivity_in_month[1], acitivity_in_month[2])),
+                "school_off_days": len(get_school_canceled_by_month(acitivity_in_month[1], acitivity_in_month[2])),
+                "strike_days": len(get_strikes_days_by_month(acitivity_in_month[1], acitivity_in_month[2])),
             }
             res_with_details.append(result_dict)
         return res_with_details
