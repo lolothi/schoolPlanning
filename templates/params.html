@@ -52,8 +52,9 @@
 <form method="post" action="{{ url_for('child_create') }}" class="inline-elements">
   <label for="child_name">Prénom*</label>
   <input type="child_name" name="child_name" id="child_name" class="inputs" required size="10" maxlength="30"><br>
-  <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-      filename='images/ajouter.png' )}} height="15" /></button>
+  <button type="submit" id="submitBtn" class="btn btn-success">+</button>
+  <!-- <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+      filename='images/ajouter.png' )}} height="15" /></button> -->
   <br />
 </form>
 {% if message %}

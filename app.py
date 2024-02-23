@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect
+from flask_bootstrap import Bootstrap5
 from datetime import datetime
 from services.services_activity import (
     getActivities,
@@ -29,6 +30,8 @@ from functions_help import stringToNumber, month_days
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
+bootstrap = Bootstrap5(app)
 
 isInEditionMode = False
 error = None
