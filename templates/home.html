@@ -7,38 +7,39 @@
 <br>
 
 {%if school_months%}
-<ul>
+<ol>
   {%for school_month in school_months%}
-  <li>
-    <div class="inline-elements">
-      <form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
-        <input type="hidden" name="month_year" value="{{ school_month.year }}">
-        <input type="hidden" name="month" value="{{ school_month.month }}">
-        <button type="submit" id="submitBtn" class="transparent-button">{{Mois(school_month.month).name}} {{
-          school_month.year }}</button>
-        {%if school_month.activities_count > 0%}
-        <a class="activity_price">{{ school_month.price_activities }}€</a>
-        {%endif%}
-        
-      </form>
+  <li style="list-style: none;">
+    <div class="card" style="margin-bottom: 10px;">
+      <h5 class="card-header inline-elements">
+          <form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
+            <input type="hidden" name="month_year" value="{{ school_month.year }}">
+            <input type="hidden" name="month" value="{{ school_month.month }}">
+            <button type="submit" id="submitBtn" class="transparent-button">{{Mois(school_month.month).name}} {{
+              school_month.year }}</button>
+            {%if school_month.activities_count > 0%}
+            <a class="activity_price">{{ school_month.price_activities }}€</a>
+            {%endif%}
+          </form>
+      </h5>
+      <div class="card-body">
+        <p>Nombres J.école : <a class="school_day">{{ school_month.school_days }}</a>, Nombres activités : {{
+          school_month.activities_count }}
+          {%if school_month.off_days > 0%}
+          , Absences : {{ school_month.off_days}}
+          {%endif%}
+          {%if school_month.strike_days > 0%}
+          , grèves : {{ school_month.strike_days}}
+          {%endif%}
+          {%if school_month.school_off_days > 0%}
+          , annulations : {{ school_month.school_off_days}}
+          {%endif%}
+        </p>
+      </div>
     </div>
-
-
-    <p>Nombres J.école : <a class="school_day">{{ school_month.school_days }}</a>, Nombres activités : {{
-      school_month.activities_count }}
-      {%if school_month.off_days > 0%}
-      , Absences : {{ school_month.off_days}}
-      {%endif%}
-      {%if school_month.strike_days > 0%}
-      , grèves : {{ school_month.strike_days}}
-      {%endif%}
-      {%if school_month.school_off_days > 0%}
-      , annulations : {{ school_month.school_off_days}}
-      {%endif%}
-    </p>
   </li>
   {%endfor%}
-</ul>
+</ol>
 {%endif%}
 
 

@@ -20,7 +20,7 @@ from services.services_usual_activity import (
 from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
-    set_month_activity_for_all_children
+    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity
 )
 from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
@@ -47,7 +47,6 @@ def index():
         "set_month_with_usual_activities"
     )
 
-    print(('checkBox', set_month_with_usual_activities))
     school_details_months = get_months_with_details()
     childrenInDb = getChilds()
     activitiesInDb = getActivities()
@@ -59,7 +58,6 @@ def index():
             mymonthActivities = MonthActivities(year[0], Mois[month[0]])
             mymonthActivities.set_month()
             if set_month_with_usual_activities == "on":
-                print(('YESYESYEScheckBox', set_month_with_usual_activities))
                 mymonthActivities.set_activities_from_usual_activities()
         except:
             error = "Erreur dans la création"
@@ -128,15 +126,12 @@ def mois(item_id):
     month_year = request.form.get("month_year")
     month = request.form.get("month")
 
-    # print('month_days', month_days(int(month_year), int(month)))
-    # print('get_activities_by_month: ', get_activities_by_month(int(month_year), int(month)))
-    # print('get_activities_by_month: ', get_activities_by_month_group_by_day(int(month_year), int(month)))
-    # print('ALL_days_month: ', mymonthActivities.month_calendar)
+    month_prices_details = get_activities_price_by_month_group_by_child_activity(int(month_year), int(month))
+    print('--PRICE',month_prices_details)
+    # if request.method == "POST":
+    #     print("POST", item_id)
 
-    if request.method == "POST":
-        print("POST", item_id)
-
-    return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber)
+    return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details)
 
 
 @app.route("/mode_edition", methods=["POST"])

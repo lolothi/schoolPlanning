@@ -68,4 +68,3 @@ CREATE TABLE IF NOT EXISTS off_days (
     FOREIGN KEY (child_id) REFERENCES Childs(id),
     FOREIGN KEY (comment_id) REFERENCES Comments(id)
 );
-

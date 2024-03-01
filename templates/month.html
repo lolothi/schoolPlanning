@@ -5,6 +5,18 @@
 
 <h1> {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
 <br>
+
+<div class="card" style="margin-bottom: 10px;">
+    <h5 class="card-header">Calculs</h5>
+    <div class="card-body">
+        <ul>
+            {%for child_activities_prices in month_prices_details%}
+            <li>{{child_activities_prices[0]}} - {{child_activities_prices[1]}} : {{child_activities_prices[2]}}€</li>
+            {%endfor%}
+        </ul>
+    </div>
+  </div>
+
 <ul>
     {%for day, day_info in mymonthActivities.month_calendar.items()%}
         {%if day_info.type == 'school_day'%}

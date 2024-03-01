@@ -95,8 +95,6 @@ def get_activities_by_month(year, month):
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()
-    # activities_dates = { day[1]: day for day in res}
-    # print('get_activities_by_month',f"{year}-{month}-01", f"{year}-{month}-{last_day}", res)
     if res:
         db.close()
         return res
@@ -109,14 +107,13 @@ def get_activities_by_month_group_by_day(year, month):
     month_str = str(month).zfill(2)
     last_day = calendar.monthrange(year, month)[1]
     reqSQL = """SELECT date, '[' || GROUP_CONCAT(json_object('id', ma.id, 'name', a.activity_name, 'price', a.activity_price, 'child', child_name, 'web_validated', web_validated,'school_canceled',school_canceled, 'family_canceled', family_canceled,'strike_canceled', strike_canceled)) || ']' AS activities_and_children from Month_activities ma INNER JOIN Activities a ON a.id = ma.activity_id INNER JOIN Childs c ON c.id = ma.child_id WHERE date BETWEEN ? AND ? GROUP BY ma.date """
-    # reqSQL = """SELECT DATE(ma.date) AS date, '[' || GROUP_CONCAT(json_object('id', ma.id, 'name', a.activity_name)) || ']' AS activities_and_children from Month_activities ma LEFT JOIN Activities a ON a.id = ma.activity_id INNER JOIN Childs c ON c.id = ma.child_id WHERE date BETWEEN ? AND ? GROUP BY DATE(ma.date) """
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()
-    # print('--activities_dict_RES: ', res)
     if res:
         db.close()
         activities_dict = { 
+            #dictionary with activities listed by day
             datetime.strptime(day, '%Y-%m-%d').date() : json.loads(activities_json) for i, (day, activities_json) in enumerate(res)}
         # print('--activities_dict: ', activities_dict)
         return activities_dict
@@ -152,6 +149,21 @@ def get_activities_price_by_month(year, month):
     else:
         db.close()
         return 0  
+    
+def get_activities_price_by_month_group_by_child_activity(year, month):
+    db = get_db()
+    month_str = str(month).zfill(2)
+    last_day = calendar.monthrange(year, month)[1]
+    reqSQL = "SELECT c.child_name, a.activity_name, SUM(a.activity_price) AS total_price FROM Month_activities ma INNER JOIN Activities a ON ma.activity_id = a.id INNER JOIN Childs c ON c.id = ma.child_id WHERE date BETWEEN ? AND ? GROUP by ma.child_id, activity_id "
+    cur = db.cursor()
+    cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
+    res = cur.fetchall()
+    if res:
+        db.close()
+        return res
+    else:
+        db.close()
+        return 0
 
 def check_existing_child_in_month_activities(child_id):
     reqSQL = "SELECT * from Month_activities WHERE child_id = ?"
