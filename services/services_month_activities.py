@@ -86,21 +86,8 @@ def set_month_activity_for_all_children(date:date, activity_id:int, web_validate
         cur.execute(reqSQL, (date, activity_id, child[0], web_validated,))
         db.commit()
     db.close()
-    
-def get_activities_by_month(year, month):
-    db = get_db()
-    month_str = str(month).zfill(2)
-    last_day = calendar.monthrange(year, month)[1]
-    reqSQL = "SELECT id, date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled, comment_id from Month_activities WHERE date BETWEEN ? AND ?"
-    cur = db.cursor()
-    cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
-    res = cur.fetchall()
-    if res:
-        db.close()
-        return res
-    else:
-        db.close()
-        return []
+
+
     
 def get_activities_by_month_group_by_day(year, month):
     db = get_db()
@@ -134,7 +121,7 @@ def get_price_by_month(year, month):
         db.close()
         return 0 
       
-
+# Uniquement pour les details
 def get_activities_price_by_month(year, month):
     db = get_db()
     month_str = str(month).zfill(2)
@@ -149,18 +136,115 @@ def get_activities_price_by_month(year, month):
     else:
         db.close()
         return 0  
-    
-def get_activities_price_by_month_group_by_child_activity(year, month):
+
+# Uniquement pour details
+def get_activities_by_month(year, month):
     db = get_db()
     month_str = str(month).zfill(2)
     last_day = calendar.monthrange(year, month)[1]
-    reqSQL = "SELECT c.child_name, a.activity_name, a.activity_price, SUM(a.activity_price) AS total_price, COUNT(*) AS total_activities FROM Month_activities ma INNER JOIN Activities a ON ma.activity_id = a.id INNER JOIN Childs c ON c.id = ma.child_id WHERE date BETWEEN ? AND ? GROUP by ma.child_id, a.activity_name "
+    reqSQL = "SELECT id, date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled, comment_id from Month_activities WHERE date BETWEEN ? AND ?"
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()
     if res:
         db.close()
         return res
+    else:
+        db.close()
+        return []
+
+def calculate_canceled_activities(total_activities, activity_price, total_price, school_canceled, family_canceled, strike_canceled):
+    if school_canceled >= 1 or family_canceled >= 1 or strike_canceled >= 1:
+        real_total_price = total_price-((school_canceled+family_canceled+strike_canceled)*activity_price)
+        real_total_activities = total_activities-(school_canceled+family_canceled+strike_canceled)
+    else:
+        real_total_price = total_price
+        real_total_activities = total_activities
+    res = {"real_total_price":real_total_price, "real_total_activities":real_total_activities}
+    print("--calculate_canceled_activities", res)
+    return {"real_total_price":real_total_price, "real_total_activities":real_total_activities}
+
+def get_real_activities_price_and_real_counted_activities_by_month_(year, month):
+    res_with_details = []
+    db = get_db()
+    month_str = str(month).zfill(2)
+    last_day = calendar.monthrange(year, month)[1]
+    reqSQL = """SELECT ma.child_id, ma.activity_id, a.activity_price, 
+    SUM(a.activity_price) AS total_price, 
+    COUNT(*) AS total_activities, 
+    SUM(ma.school_canceled) AS total_school_canceled, 
+    SUM(ma.family_canceled) AS total_family_canceled, 
+    SUM(ma.strike_canceled) AS total_strike_canceled
+    FROM Month_activities ma 
+    INNER JOIN Activities a ON ma.activity_id = a.id 
+    WHERE date BETWEEN ? AND ? GROUP by ma.child_id, a.activity_id"""
+    cur = db.cursor()
+    cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
+    res = cur.fetchall()
+    if res:
+        for child_activity in res:
+            # for canceled activities substraction 
+            if child_activity[5] >= 1 or child_activity[6] >= 1 or child_activity[7] >= 1:
+                real_total_price = child_activity[3]-((child_activity[5]+child_activity[6]+child_activity[7])*child_activity[2])
+                real_total_activities = child_activity[4]-(child_activity[5]+child_activity[6]+child_activity[7])
+            else:
+                real_total_price = child_activity[3]
+                real_total_activities = child_activity[4]
+
+
+
+            result_dict = {
+               "child_name":child_activity[0], 
+               "activity_name":child_activity[1],
+               "activity_price":child_activity[2],
+               "total_price":child_activity[3],
+               "real_total_price":real_total_price,
+               "total_activities":child_activity[4],
+               "real_total_activities":real_total_activities,
+               "canceled_activities":child_activity[5]+child_activity[6]+child_activity[7],
+            }
+            res_with_details.append(result_dict)
+        db.close()
+        return res_with_details
+    else:
+        db.close()
+        return 0
+       
+def get_activities_price_by_month_group_by_child_activity(year, month):
+    res_with_details = []
+    db = get_db()
+    month_str = str(month).zfill(2)
+    last_day = calendar.monthrange(year, month)[1]
+    reqSQL = """SELECT c.child_name, a.activity_name, a.activity_price, 
+    SUM(a.activity_price) AS total_price, 
+    COUNT(*) AS total_activities, 
+    SUM(ma.school_canceled) AS total_school_canceled, 
+    SUM(ma.family_canceled) AS total_family_canceled, 
+    SUM(ma.strike_canceled) AS total_strike_canceled
+    FROM Month_activities ma 
+    INNER JOIN Activities a ON ma.activity_id = a.id 
+    INNER JOIN Childs c ON c.id = ma.child_id 
+    WHERE date BETWEEN ? AND ? GROUP by ma.child_id, a.activity_name"""
+    cur = db.cursor()
+    cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
+    res = cur.fetchall()
+    if res:
+        for child_activity in res:
+            # for canceled activities substraction 
+            canceled_activities = calculate_canceled_activities(child_activity[4], child_activity[2], child_activity[3], child_activity[5], child_activity[6], child_activity[7])
+            result_dict = {
+               "child_name":child_activity[0], 
+               "activity_name":child_activity[1],
+               "activity_price":child_activity[2],
+               "total_price":child_activity[3],
+               "real_total_price":canceled_activities['real_total_price'],
+               "total_activities":child_activity[4],
+               "real_total_activities":canceled_activities['real_total_activities'],
+               "canceled_activities":child_activity[5]+child_activity[6]+child_activity[7],
+            }
+            res_with_details.append(result_dict)
+        db.close()
+        return res_with_details
     else:
         db.close()
         return 0
@@ -190,3 +274,35 @@ def check_existing_activity_in_month_activities(activity_id):
     else:
         db.close()
         return False
+    
+
+# Month Activities : DAYS OFF  
+def set_day_off_on_activity(date:date, child_id:int, web_validated:bool=0, strike_canceled:bool=0, family_canceled:bool=0, school_canceled:bool=0 ):
+    db = get_db()
+    reqSQL = ""
+    if child_id == 0 :
+        if strike_canceled == 1 :
+            print('strike_canceled')
+            reqSQL = "UPDATE Month_activities SET strike_canceled = 1 WHERE date = ?"
+        elif family_canceled == 1 :
+            print('strike_canceled')
+            reqSQL = "UPDATE Month_activities SET family_canceled = 1 WHERE date = ?"
+        elif school_canceled == 1 :
+            print('strike_canceled')
+            reqSQL = "UPDATE Month_activities SET school_canceled = 1 WHERE date = ?"
+        cur = db.cursor()
+        cur.execute(reqSQL, (date, ))
+    else :
+        if strike_canceled == 1 :
+            print('strike_canceled')
+            reqSQL = "UPDATE Month_activities SET strike_canceled = 1 WHERE date = ? and child_id = ?"
+        elif family_canceled == 1 :
+            print('strike_canceled')
+            reqSQL = "UPDATE Month_activities SET family_canceled = 1 WHERE date = ? and child_id = ?"
+        elif school_canceled == 1 :
+            print('strike_canceled')
+            reqSQL = "UPDATE Month_activities SET school_canceled = 1 WHERE date = ? and child_id = ?"
+        cur = db.cursor()
+        cur.execute(reqSQL, (date, child_id))
+    db.commit()
+    db.close()

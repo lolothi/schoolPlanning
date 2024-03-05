@@ -6,17 +6,23 @@
 <h1> {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
 <br>
 
+<!-- CARD before DAYS -->
 <div class="card" style="margin-bottom: 10px;">
     <div class="card-header d-flex align-items-start"><h5>Totaux</h5><a> : {{total_price_activities}}€</a></div>
     <div class="card-body">
         <ul>
             {%for child_activities_prices in month_prices_details%}
-            <li>{{child_activities_prices[0]}} - {{child_activities_prices[1]}} - prix : {{child_activities_prices[3]}}€ ({{child_activities_prices[4]}}x{{child_activities_prices[2]}}€)</li>
+                {%if child_activities_prices.canceled_activities > 0 %}
+                <li>{{child_activities_prices.child_name}} - {{child_activities_prices.activity_name}} - prix : <del class="canceled_day">{{child_activities_prices.total_price}}</del>{{child_activities_prices.real_total_price}}€ (<del class="canceled_day">{{child_activities_prices.total_activities}}</del>{{child_activities_prices.real_total_activities}}x{{child_activities_prices.activity_price}}€) : <span class="canceled_day">{{child_activities_prices.canceled_activities}} annulations</span></li>
+                {%else%}
+                <li>{{child_activities_prices.child_name}} - {{child_activities_prices.activity_name}} - prix : {{child_activities_prices.real_total_price}}€ ({{child_activities_prices.real_total_activities}}x{{child_activities_prices.activity_price}}€)</li>
+                {%endif%}
             {%endfor%}
         </ul>
     </div>
   </div>
 
+<!-- Month DAYS -->
 <ul>
     {%for day, day_info in mymonthActivities.month_calendar.items()%}
         {%if day_info.type == 'school_day'%}
@@ -24,7 +30,15 @@
                 {%if day_info.activities%}
                 <ul>
                     {%for activity in day_info.activities%}
-                    <li class="simple-text">{{ activity.name }} - pour {{ activity.child }} - prix: {{ activity.price }} €</li>
+                        {%if activity.strike_canceled == 1%}
+                        <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del> : Grève</li>
+                        {%elif activity.family_canceled == 1%}
+                        <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del> : Absence {{ activity.child }}</li>
+                        {%elif activity.school_canceled == 1%}
+                        <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del> : Annulation école </li>
+                        {%else%}
+                        <li class="simple-text">{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }} €</li>
+                        {%endif%}
                     {%endfor%}
                 </ul>
                 {%endif%}

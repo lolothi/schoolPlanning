@@ -1,6 +1,6 @@
 from datetime import date
 import calendar
-from services.services_month_activities import set_new_month, check_existing_month, get_activities_by_month, get_activities_by_month_group_by_day, set_month_activity
+from services.services_month_activities import set_new_month, check_existing_month, get_activities_by_month_group_by_day, set_month_activity
 from services.services_usual_activity import get_dict_of_usual_activities_group_by_day
 from functions_help import month_days
 
@@ -16,9 +16,9 @@ class MonthActivities(object):
     # def month_calendar(self):
     #     return calendar.monthcalendar(self.year, self.month)
     
-    @property
-    def activities(self):
-        return get_activities_by_month(self.year, self.month)
+    # @property
+    # def activities(self):
+    #     return get_activities_by_month(self.year, self.month)
 
     @property
     def month_calendar(self):

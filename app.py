@@ -20,7 +20,7 @@ from services.services_usual_activity import (
 from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
-    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity
+    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity
 )
 from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
@@ -109,13 +109,16 @@ def day_off_create():
 
             elif month_canceled_type == "grève":
                     set_off_days(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=1)
+                    set_day_off_on_activity(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=1)
             elif month_canceled_type == "absence enfant":
                     set_off_days(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=0, family_canceled=1)
+                    set_day_off_on_activity(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=0, family_canceled=1)
             elif month_canceled_type == "annulation par école":
                     set_off_days(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=0, family_canceled=0, school_canceled=1)
+                    set_day_off_on_activity(input_date, int(activity_child_id), day_off_web_validation, strike_canceled=0, family_canceled=0, school_canceled=1)
         else:
             error_date = "La date choisie n'est pas un jour d'école"
-            # TODO a GERER les erreurs et surtout informer cette erreur de date !!
+            # TODO a GERER les erreurs et surtout informer cette erreur de date !! Attention a ne pas mettre sur le même jour une absence+greve+annulation
 
     return redirect("/")
 
@@ -129,9 +132,8 @@ def mois(item_id):
 
     month_prices_details = get_activities_price_by_month_group_by_child_activity(int(month_year), int(month))
     print('--PRICE',month_prices_details)
-    # if request.method == "POST":
-    #     print("POST", item_id)
-
+    # print('--ACTIVITIES',MonthActivities(month_year, month).month_activities)
+    
     return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details, total_price_activities=total_price_activities)
 
 

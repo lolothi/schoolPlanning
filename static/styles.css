@@ -69,6 +69,11 @@ visibility: visible;
     font-weight: bold;
     color: grey;
 }
+.canceled_day {
+    font-weight: normal;
+    /* text-decoration: line-through; */
+    color: red;
+}
 .simple-text{
     font-weight: normal;
 }
