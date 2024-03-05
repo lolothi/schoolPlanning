@@ -125,13 +125,14 @@ def mois(item_id):
     
     month_year = request.form.get("month_year")
     month = request.form.get("month")
+    total_price_activities = request.form.get("price_activities")
 
     month_prices_details = get_activities_price_by_month_group_by_child_activity(int(month_year), int(month))
     print('--PRICE',month_prices_details)
     # if request.method == "POST":
     #     print("POST", item_id)
 
-    return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details)
+    return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details, total_price_activities=total_price_activities)
 
 
 @app.route("/mode_edition", methods=["POST"])

@@ -154,7 +154,7 @@ def get_activities_price_by_month_group_by_child_activity(year, month):
     db = get_db()
     month_str = str(month).zfill(2)
     last_day = calendar.monthrange(year, month)[1]
-    reqSQL = "SELECT c.child_name, a.activity_name, SUM(a.activity_price) AS total_price FROM Month_activities ma INNER JOIN Activities a ON ma.activity_id = a.id INNER JOIN Childs c ON c.id = ma.child_id WHERE date BETWEEN ? AND ? GROUP by ma.child_id, activity_id "
+    reqSQL = "SELECT c.child_name, a.activity_name, a.activity_price, SUM(a.activity_price) AS total_price, COUNT(*) AS total_activities FROM Month_activities ma INNER JOIN Activities a ON ma.activity_id = a.id INNER JOIN Childs c ON c.id = ma.child_id WHERE date BETWEEN ? AND ? GROUP by ma.child_id, a.activity_name "
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()

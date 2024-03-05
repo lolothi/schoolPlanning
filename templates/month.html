@@ -7,11 +7,11 @@
 <br>
 
 <div class="card" style="margin-bottom: 10px;">
-    <h5 class="card-header">Calculs</h5>
+    <div class="card-header d-flex align-items-start"><h5>Totaux</h5><a> : {{total_price_activities}}€</a></div>
     <div class="card-body">
         <ul>
             {%for child_activities_prices in month_prices_details%}
-            <li>{{child_activities_prices[0]}} - {{child_activities_prices[1]}} : {{child_activities_prices[2]}}€</li>
+            <li>{{child_activities_prices[0]}} - {{child_activities_prices[1]}} - prix : {{child_activities_prices[3]}}€ ({{child_activities_prices[4]}}x{{child_activities_prices[2]}}€)</li>
             {%endfor%}
         </ul>
     </div>

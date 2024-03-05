@@ -15,6 +15,11 @@
           <form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
             <input type="hidden" name="month_year" value="{{ school_month.year }}">
             <input type="hidden" name="month" value="{{ school_month.month }}">
+            {%if school_month.activities_count > 0%}
+            <input type="hidden" name="price_activities" value="{{ school_month.price_activities }}">
+            {%else%}
+            <input type="hidden" name="price_activities" value="0">
+            {%endif%}
             <button type="submit" id="submitBtn" class="transparent-button">{{Mois(school_month.month).name}} {{
               school_month.year }}</button>
             {%if school_month.activities_count > 0%}
