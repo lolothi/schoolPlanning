@@ -20,8 +20,7 @@ from services.services_usual_activity import (
 from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
-    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity
-)
+    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity)
 from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
 from classes.MonthActivities import MonthActivities
@@ -51,6 +50,7 @@ def index():
     childrenInDb = getChilds()
     activitiesInDb = getActivities()
     usual_activities_in_DB = getUsualActivities()
+    print('__REAL', school_details_months)
 
     month_canceled_type = ["absence enfant", "grève", "annulation par école"]
     if request.method == "POST":
@@ -131,11 +131,9 @@ def mois(item_id):
     total_price_activities = request.form.get("price_activities")
 
     month_prices_details = get_activities_price_by_month_group_by_child_activity(int(month_year), int(month))
-    print('--PRICE',month_prices_details)
-    # print('--ACTIVITIES',MonthActivities(month_year, month).month_activities)
+    # print('--PRICE',month_prices_details)
     
     return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details, total_price_activities=total_price_activities)
-
 
 @app.route("/mode_edition", methods=["POST"])
 def mode_edition():
