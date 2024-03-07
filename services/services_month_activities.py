@@ -143,20 +143,6 @@ def get_activities_by_month_group_by_day(year, month):
         return {}
 
 
-def get_price_by_month(year, month):
-    db = get_db()
-    reqSQL = "SELECT SUM(activity_price) FROM Month_activities WHERE date BETWEEN ? AND ? GROUP BY date"
-    cur = db.cursor()
-    cur.execute(reqSQL, (f"{year}-{month}-01", f"{year}-{month+1}-01"))
-    res = cur.fetchall()
-    if res:
-        db.close()
-        return res[0][0]
-    else:
-        db.close()
-        return 0
-
-
 # Uniquement pour les details
 # def get_activities_price_by_month(year, month):
 #     db = get_db()
@@ -213,7 +199,7 @@ def get_real_activities_price_and_real_counted_activities_by_month(year, month):
         return res[0]
     else:
         db.close()
-        return 0
+        return []
 
 
 def calculate_real_activities(
@@ -287,8 +273,22 @@ def get_activities_price_by_month_group_by_child_activity(year, month):
         return res_with_details
     else:
         db.close()
-        return 0
+        return []
 
+def check_existing_activities_in_month(year, month):
+    db = get_db()
+    month_str = str(month).zfill(2)
+    last_day = calendar.monthrange(year, month)[1]
+    reqSQL = "SELECT * from Month_activities date BETWEEN ? AND ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
+    res = cur.fetchall()
+    if res:
+        db.close()
+        return True
+    else:
+        db.close()
+        return False
 
 def check_existing_child_in_month_activities(child_id):
     reqSQL = "SELECT * from Month_activities WHERE child_id = ?"

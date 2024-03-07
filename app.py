@@ -123,7 +123,7 @@ def day_off_create():
     return redirect("/")
 
 
-@app.route("/mois/<int:item_id>", methods=["POST", "GET"])
+@app.route("/mois/<int:item_id>", methods=["POST"])
 def mois(item_id):
     
     month_year = request.form.get("month_year")

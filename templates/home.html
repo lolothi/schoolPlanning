@@ -7,11 +7,12 @@
 <br>
 
 {%if school_months%}
-<ol>
-  {%for school_month in school_months%}
-  <li style="list-style: none;">
-    <div class="card" style="margin-bottom: 10px;">
-      <h5 class="card-header inline-elements">
+<div id="home_month">
+  <ol>
+    {%for school_month in school_months%}
+    <li style="list-style: none;">
+      <div class="card" style="margin-bottom: 10px;">
+        <h5 class="card-header inline-elements" style="background-color: #BAE1FC;">
           <form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
             <input type="hidden" name="month_year" value="{{ school_month.year }}">
             <input type="hidden" name="month" value="{{ school_month.month }}">
@@ -26,52 +27,61 @@
             <a class="activity_price">{{ school_month.price_activities }}€</a>
             {%endif%}
           </form>
-      </h5>
-      <div class="card-body">
-        <p>Nombres J.école : <a class="school_day">{{ school_month.school_days }}</a>, Nombres activités : {{
-          school_month.activities_count }}
-          {%if school_month.off_days > 0%}
-          , Absences : {{ school_month.off_days}}
-          {%endif%}
-          {%if school_month.strike_days > 0%}
-          , grèves : {{ school_month.strike_days}}
-          {%endif%}
-          {%if school_month.school_off_days > 0%}
-          , annulations : {{ school_month.school_off_days}}
-          {%endif%}
-        </p>
+        </h5>
+        <div class="card-body">
+          <p>Nombres J.école : <a class="school_day">{{ school_month.school_days }}</a>, Nombres activités : {{
+            school_month.activities_count }}
+            {%if school_month.off_days > 0%}
+            , Absences : {{ school_month.off_days}}
+            {%endif%}
+            {%if school_month.strike_days > 0%}
+            , grèves : {{ school_month.strike_days}}
+            {%endif%}
+            {%if school_month.school_off_days > 0%}
+            , annulations : {{ school_month.school_off_days}}
+            {%endif%}
+          </p>
+        </div>
       </div>
-    </div>
-  </li>
-  {%endfor%}
-</ol>
+    </li>
+    {%endfor%}
+  </ol>
+</div>
 {%endif%}
 
+<div class="card">
+  <h5 class="card-header">Nouveau Mois</h5>
+  <div class="card-body">
+    <p>
+    <form action="" method="POST" class="inline-elements">
+      <label for="month-select">Mois :</label>
+      <select name="month-select" id="month-select" id="month" required>
+        {%for mois in Mois%}
+        <option value="{{ mois.name }}" {% if today.mois==mois.name %}selected="selected" {% endif %}>{{ mois.name}}
+        </option>
+        {%endfor%}
+      </select>
+      <label for="year">Année :</label>
+      <input type="number" id="year" name="year" value="{{ today.year }}" size="5" maxlength="30" required><br>
+      {%if usual_activities_in_DB%}
+      <label for="set_month_with_usual_activities" disabled>Activités habituelles :</label>
+      <input type="checkbox" name="set_month_with_usual_activities" id="set_month_with_usual_activities" checked>
+      {%else%}
+      <label class="grey-text" for="set_month_with_usual_activities" disabled>Activités habituelles :</label>
+      <input type="checkbox" name="set_month_with_usual_activities" id="set_month_with_usual_activities" disabled>
+      {%endif%}
 
-<form action="" method="POST" class="inline-elements">
-  <label for="month-select">Mois :</label>
-  <select name="month-select" id="month-select" id="month" required>
-    {%for mois in Mois%}
-    <option value="{{ mois.name }}" {% if today.mois==mois.name %}selected="selected" {% endif %}>{{ mois.name}}
-    </option>
-    {%endfor%}
-  </select>
-  <label for="year">Année :</label>
-  <input type="number" id="year" name="year" value="{{ today.year }}" size="5" maxlength="30" required><br>
-  {%if usual_activities_in_DB%}
-  <label for="set_month_with_usual_activities" disabled>Activités habituelles :</label>
-  <input type="checkbox" name="set_month_with_usual_activities" id="set_month_with_usual_activities" checked>
-  {%else%}
-  <label class="grey-text" for="set_month_with_usual_activities" disabled>Activités habituelles :</label>
-  <input type="checkbox" name="set_month_with_usual_activities" id="set_month_with_usual_activities" disabled>
-  {%endif%}
+      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+          filename='images/ajouter.png' )}} height="15" /></button>
+    </form>
+    </p>
+  </div>
+</div>
 
-  <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-      filename='images/ajouter.png' )}} height="15" /></button>
-</form>
-<br>
+<div class="card">
+  <div class="card-body">
 
-{%if school_months%}
+    {%if school_months%}
 <form method="post" action="{{ url_for('day_off_create') }}"> <!-- class="inline-elements" -->
   <label for="input_date">Date*:</label>
   <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime(" %Y-%m-%d") }}" required
@@ -122,9 +132,7 @@
     <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
         filename='images/ajouter.png' )}} height="15" /></button>
     </p>
-    <br>
 
-    <br />
 </form>
 {% if message %}
 <a class="message">{{message}}</a>
@@ -134,8 +142,14 @@
 <p class="errorAuth">{{error}}</p>
 {% endif %}
 {% endif %}
-<br />
-<br>
+    
+  </div>
+</div>
+
+
+
+
+
 
 <script>
   var input_date = document.getElementById("input_date");
