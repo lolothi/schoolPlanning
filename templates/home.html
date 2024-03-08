@@ -12,7 +12,7 @@
     {%for school_month in school_months%}
     <li style="list-style: none;">
       <div class="card" style="margin-bottom: 10px;">
-        <h5 class="card-header inline-elements" style="background-color: #BAE1FC;">
+        <h5 class="card-header" style="background-color: #BAE1FC;">
           <form method="post" action="{{ url_for('mois', item_id=school_month.month_id) }}">
             <input type="hidden" name="month_year" value="{{ school_month.year }}">
             <input type="hidden" name="month" value="{{ school_month.month }}">
@@ -21,24 +21,35 @@
             {%else%}
             <input type="hidden" name="price_activities" value="0">
             {%endif%}
-            <button type="submit" id="submitBtn" class="transparent-button">{{Mois(school_month.month).name}} {{
-              school_month.year }}</button>
-            {%if school_month.activities_count > 0%}
-            <a class="activity_price">{{ school_month.price_activities }}€</a>
-            {%endif%}
+            <div class="inline-elements"><button type="submit" id="submitBtn"
+                class="transparent-button">{{Mois(school_month.month).name}} {{
+                school_month.year }}</button>
+              <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+                  filename='images/loupe-24.png' )}} height="17" /></button>
+            </div>
+
           </form>
         </h5>
         <div class="card-body">
-          <p>Nombres J.école : <a class="school_day">{{ school_month.school_days }}</a>, Nombres activités : {{
-            school_month.activities_count }}
-            {%if school_month.off_days > 0%}
-            , Absences : {{ school_month.off_days}}
+          {%if school_month.activities_count > 0%}
+          <p><a class="rounded"><img src={{ url_for('static', filename='images/euro-60.png' )}} height="30" /> {{
+              school_month.price_activities }}€</a></p>
+          {%endif%}
+          <p><img src={{ url_for('static', filename='images/backpack-48.png' )}} height="30" /><a class="school_day">{{
+              school_month.school_days }}</a><img src={{ url_for('static', filename='images/stretching-48.png' )}}
+              height="30" />{{
+            school_month.activities_count }}</p>
+          {%if school_month.off_days > 0%}
+          <p><img src={{ url_for('static', filename='images/face-with-thermometer-48.png' )}} height="30" />{{
+            school_month.off_days}}
             {%endif%}
             {%if school_month.strike_days > 0%}
-            , grèves : {{ school_month.strike_days}}
+            <img src={{ url_for('static', filename='images/strike-40.png' )}} height="30" />{{
+            school_month.strike_days}}
             {%endif%}
             {%if school_month.school_off_days > 0%}
-            , annulations : {{ school_month.school_off_days}}
+            <img src={{ url_for('static', filename='images/canceled-48.png' )}} height="30" />{{
+            school_month.school_off_days}}
             {%endif%}
           </p>
         </div>
@@ -82,67 +93,67 @@
   <div class="card-body">
 
     {%if school_months%}
-<form method="post" action="{{ url_for('day_off_create') }}"> <!-- class="inline-elements" -->
-  <label for="input_date">Date*:</label>
-  <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime(" %Y-%m-%d") }}" required
-    size="10" maxlength="30">
-  {% if message %}
-  <a class="message">{{message_date}}</a>
-  {% endif %}
-  {%if childrenInDb%}
-  <select name="activity_child">
-    <option value="0">-- enfant*:tous --</option>
-    {% for child in childrenInDb %}
-    <option value="{{ child[0] }}">{{ child[1] }}</option>
-    {% endfor %}
-    {%else%}
-    <select name="activity_child" disabled>
-      <option value="0">-- enfant*:tous --</option>
+    <form method="post" action="{{ url_for('day_off_create') }}"> <!-- class="inline-elements" -->
+      <label for="input_date">Date*:</label>
+      <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime(" %Y-%m-%d") }}"
+        required size="10" maxlength="30">
+      {% if message %}
+      <a class="message">{{message_date}}</a>
       {% endif %}
-    </select>
-    <br>
-    <p><a>Activité: </a>
-      {%if activitiesInDb%}
-      <select name="activity">
-        <option value="0">-- activité* --</option>
-        {%for activity in activitiesInDb%}
-        <option value="{{ activity[0] }}">{{ activity[1] }}</option>
+      {%if childrenInDb%}
+      <select name="activity_child">
+        <option value="0">-- enfant*:tous --</option>
+        {% for child in childrenInDb %}
+        <option value="{{ child[0] }}">{{ child[1] }}</option>
         {% endfor %}
-      </select>
-      <label for="activity_web_validation">validation Web :</label>
-      <input type="checkbox" name="activity_web_validation" id="activity_web_validation">
-      <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-          filename='images/ajouter.png' )}} height="15" /></button>
-      {%else%}
-      <select name="activity" disabled>
-        <option value="0">-- activité* --</option>
-      </select>
-      {% endif %}
+        {%else%}
+        <select name="activity_child" disabled>
+          <option value="0">-- enfant*:tous --</option>
+          {% endif %}
+        </select>
+        <br>
+        <p><a>Activité: </a>
+          {%if activitiesInDb%}
+          <select name="activity">
+            <option value="0">-- activité* --</option>
+            {%for activity in activitiesInDb%}
+            <option value="{{ activity[0] }}">{{ activity[1] }}</option>
+            {% endfor %}
+          </select>
+          <label for="activity_web_validation">validation Web :</label>
+          <input type="checkbox" name="activity_web_validation" id="activity_web_validation">
+          <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+              filename='images/ajouter.png' )}} height="15" /></button>
+          {%else%}
+          <select name="activity" disabled>
+            <option value="0">-- activité* --</option>
+          </select>
+          {% endif %}
 
-    </p>
-    <a> OU Annulation JOUR : </a>
-    <select name="month_canceled_type" required>
-      <option value="0">-- choisir type*--</option>
-      {% for type in month_canceled_type %}
-      <option value="{{ type }}">{{ type }}</option>
-      {% endfor %}
-    </select>
-    <label for="day_off_web_validation">suppression activité Web :</label>
-    <input type="checkbox" name="day_off_web_validation" id="day_off_web_validation">
-    <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
-        filename='images/ajouter.png' )}} height="15" /></button>
-    </p>
+        </p>
+        <a> OU Annulation JOUR : </a>
+        <select name="month_canceled_type" required>
+          <option value="0">-- choisir type*--</option>
+          {% for type in month_canceled_type %}
+          <option value="{{ type }}">{{ type }}</option>
+          {% endfor %}
+        </select>
+        <label for="day_off_web_validation">suppression activité Web :</label>
+        <input type="checkbox" name="day_off_web_validation" id="day_off_web_validation">
+        <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+            filename='images/ajouter.png' )}} height="15" /></button>
+        </p>
 
-</form>
-{% if message %}
-<a class="message">{{message}}</a>
-{% endif %}
-<br />
-{% if error %}
-<p class="errorAuth">{{error}}</p>
-{% endif %}
-{% endif %}
-    
+    </form>
+    {% if message %}
+    <a class="message">{{message}}</a>
+    {% endif %}
+    <br />
+    {% if error %}
+    <p class="errorAuth">{{error}}</p>
+    {% endif %}
+    {% endif %}
+
   </div>
 </div>
 

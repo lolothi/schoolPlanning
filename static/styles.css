@@ -3,6 +3,10 @@
     border: none;
     outline: none; 
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
 }
 
 .transparent-disabled-button {
@@ -41,6 +45,7 @@ visibility: visible;
 .inline-elements {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .form-inline-elements {
