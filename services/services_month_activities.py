@@ -7,7 +7,6 @@ from functions_help import calculate_real_activities_in_month
 
 # --- school Month ---
 def set_new_month(year, month, school_days=None):
-    print("set_new_month", year, month, school_days)
     db = get_db()
     reqSQL = "INSERT INTO School_months (year, month, school_days) VALUES (?, ?, ?)"
     cur = db.cursor()
@@ -36,16 +35,22 @@ def get_months():
     db.close()
 
 def delete_month_and_activities(month_id:int, year, month):  
+    reqSQLdelMonth = "DELETE from School_months WHERE id = ?"
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQLdelMonth, (month_id, ))
+    db.commit()
+    delete_activities(year, month)
+
+def delete_activities(year, month):  
     month_str = str(month).zfill(2)
     last_day = calendar.monthrange(year, month)[1]
-    reqSQLdelMonth = "DELETE from School_months WHERE id = ?"
     reqSQLcheck = "SELECT * FROM Month_activities WHERE date BETWEEN ? AND ?"
     reqSQLdelActivities = "DELETE FROM Month_activities WHERE date BETWEEN ? AND ?"
     
     db = get_db()
     cur = db.cursor()
-    cur.execute(reqSQLdelMonth, (month_id, ))
-    db.commit()
 
     cur.execute(reqSQLcheck, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()

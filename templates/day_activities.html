@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+
+<h1> {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
+<button type="button" class="btn btn-outline-secondary" data-toggle="modal"
+    data-target="#deleteModal">Supprimer</button>
+<br>
+<br>
+
+{% endblock %}
