@@ -4,57 +4,98 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 
 <h1> {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
+<button type="button" class="btn btn-outline-secondary">Non réglé</button>
+<button type="button" class="btn btn-outline-secondary" data-toggle="modal"
+    data-target="#deleteModal">Supprimer</button>
+<br>
 <br>
 
 <!-- CARD before DAYS -->
 <div class="card" style="margin-bottom: 10px;">
-    <div class="card-header d-flex align-items-start"><h5>Totaux</h5><a> : {{total_price_activities}}€</a></div>
+    <div class="card-header d-flex align-items-start">
+        <h5>Totaux</h5><a> : {{total_price_activities}}€</a>
+    </div>
     <div class="card-body">
         <ul>
             {%for child_activities_prices in month_prices_details%}
-                {%if child_activities_prices.canceled_activities > 0 %}
-                <li>{{child_activities_prices.child_name}} - {{child_activities_prices.activity_name}} - prix : <del class="canceled_day">{{child_activities_prices.total_price}}</del>{{child_activities_prices.real_total_price}}€ (<del class="canceled_day">{{child_activities_prices.total_activities}}</del>{{child_activities_prices.real_total_activities}}x{{child_activities_prices.activity_price}}€) : <span class="canceled_day">{{child_activities_prices.canceled_activities}} annulations</span></li>
-                {%else%}
-                <li>{{child_activities_prices.child_name}} - {{child_activities_prices.activity_name}} - prix : {{child_activities_prices.real_total_price}}€ ({{child_activities_prices.real_total_activities}}x{{child_activities_prices.activity_price}}€)</li>
-                {%endif%}
+            {%if child_activities_prices.canceled_activities > 0 %}
+            <li>{{child_activities_prices.child_name}} - {{child_activities_prices.activity_name}} - prix : <del
+                    class="canceled_day">{{child_activities_prices.total_price}}</del>{{child_activities_prices.real_total_price}}€
+                (<del
+                    class="canceled_day">{{child_activities_prices.total_activities}}</del>{{child_activities_prices.real_total_activities}}x{{child_activities_prices.activity_price}}€)
+                : <span class="canceled_day">{{child_activities_prices.canceled_activities}} annulations</span></li>
+            {%else%}
+            <li>{{child_activities_prices.child_name}} - {{child_activities_prices.activity_name}} - prix :
+                {{child_activities_prices.real_total_price}}€
+                ({{child_activities_prices.real_total_activities}}x{{child_activities_prices.activity_price}}€)</li>
+            {%endif%}
             {%endfor%}
         </ul>
     </div>
-  </div>
+</div>
 
 <!-- Month DAYS -->
 <ul>
     {%for day, day_info in mymonthActivities.month_calendar.items()%}
-        {%if day_info.type == 'school_day'%}
-            <li class="school_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }}
-                {%if day_info.activities%}
-                <ul>
-                    {%for activity in day_info.activities%}
-                        {%if activity.strike_canceled == 1%}
-                        <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del> : Grève</li>
-                        {%elif activity.family_canceled == 1%}
-                        <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del> : Absence {{ activity.child }}</li>
-                        {%elif activity.school_canceled == 1%}
-                        <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del> : Annulation école </li>
-                        {%else%}
-                        <li class="simple-text">{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }} €</li>
-                        {%endif%}
-                    {%endfor%}
-                </ul>
-                {%endif%}
-
-            </li>
-        {%elif day_info.type == 'public_holiday'%}
-            <li class="off_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }} : J.férié</li>
-        {%elif day_info.type == 'school_holiday'%}
-            <li class="off_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }} : Vacs</li>
-        {%else%}
-            <li class="off_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }}</li>
+    {%if day_info.type == 'school_day'%}
+    <li class="school_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }}
+        {%if day_info.activities%}
+        <ul>
+            {%for activity in day_info.activities%}
+            {%if activity.strike_canceled == 1%}
+            <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del>
+                : Grève</li>
+            {%elif activity.family_canceled == 1%}
+            <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del>
+                : Absence {{ activity.child }}</li>
+            {%elif activity.school_canceled == 1%}
+            <li class="canceled_day"><del>{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }}€</del>
+                : Annulation école </li>
+            {%else%}
+            <li class="simple-text">{{ activity.child }} - {{ activity.name }} - prix: {{ activity.price }} €</li>
+            {%endif%}
+            {%endfor%}
+        </ul>
         {%endif%}
+
+    </li>
+    {%elif day_info.type == 'public_holiday'%}
+    <li class="off_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }} : J.férié</li>
+    {%elif day_info.type == 'school_holiday'%}
+    <li class="off_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }} : Vacs</li>
+    {%else%}
+    <li class="off_day">{{ Jour(stringToNumber(day_info.week_day)).name }} {{ day.day }}</li>
+    {%endif%}
     {%endfor%}
 </ul>
 
 
-
+<!-- Modal to delete a month -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Supprimer le mois</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer le mois de {{ Mois(mymonthActivities.month).name }} {{
+                mymonthActivities.year }} ?
+                Cela supprimera également toutes les activités créées pour ce mois-ci.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <form method="post" action="{{ url_for('supprimer_mois', item_id=month_id) }}">
+                    <input type="hidden" name="month_year" value="{{ mymonthActivities.year }}">
+                    <input type="hidden" name="month" value="{{ mymonthActivities.month }}">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

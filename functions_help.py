@@ -64,3 +64,27 @@ def holidays(year, month, zone='A'):
     # https://github.com/AntoineAugusti/vacances-scolaires-france
     d = SchoolHolidayDates()
     return [holiday for holiday in d.holidays_for_year_and_zone(year, zone) if holiday.month == month]
+
+
+def calculate_real_activities_in_month(
+    total_activities,
+    activity_price,
+    total_price,
+    school_canceled,
+    family_canceled,
+    strike_canceled,
+):
+    if school_canceled >= 1 or family_canceled >= 1 or strike_canceled >= 1:
+        real_total_price = total_price - (
+            (school_canceled + family_canceled + strike_canceled) * activity_price
+        )
+        real_total_activities = total_activities - (
+            school_canceled + family_canceled + strike_canceled
+        )
+    else:
+        real_total_price = total_price
+        real_total_activities = total_activities
+    return {
+        "real_total_price": real_total_price,
+        "real_total_activities": real_total_activities,
+    }

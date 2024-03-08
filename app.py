@@ -20,7 +20,7 @@ from services.services_usual_activity import (
 from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
-    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity)
+    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity, delete_month_and_activities)
 from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
 from classes.MonthActivities import MonthActivities
@@ -50,7 +50,6 @@ def index():
     childrenInDb = getChilds()
     activitiesInDb = getActivities()
     usual_activities_in_DB = getUsualActivities()
-    print('__REAL', school_details_months)
 
     month_canceled_type = ["absence enfant", "grève", "annulation par école"]
     if request.method == "POST":
@@ -135,15 +134,27 @@ def mois(item_id):
     
     return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details, total_price_activities=total_price_activities)
 
+@app.route("/mois/supprimer/<int:item_id>", methods=["POST"])
+def supprimer_mois(item_id):
+    
+    month_year = request.form.get("month_year")
+    month = request.form.get("month")
+    
+    print("--SUPPRIMEr--mois ", item_id, month_year, month)
+    delete_month_and_activities(int(item_id), int(month_year), int(month))
+    
+    return redirect("/")
+
 @app.route("/mode_edition", methods=["POST"])
 def mode_edition():
     global isInEditionMode
+    template_redirection = request.form.get("template_redirection")
     if request.method == "POST":
         if isInEditionMode is False:
             isInEditionMode = True
         else:
             isInEditionMode = False
-    return redirect("/params")
+    return redirect(template_redirection)
 
 
 @app.route("/child_delete/<int:item_id>", methods=["POST"])
@@ -279,9 +290,7 @@ def params():
         usual_activities_in_DB_day_group = get_list_of_usual_activities_group_by_day()
     else:
         usual_activities_in_DB_day_group = []
-
-    print('--usual_activities_in_DB_day_group: ', usual_activities_in_DB_day_group)
-    
+            
     JoursFeriesAnneeEnCours = JoursFeries()
 
     return render_template(

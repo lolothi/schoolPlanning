@@ -95,7 +95,7 @@
     {%if school_months%}
     <form method="post" action="{{ url_for('day_off_create') }}"> <!-- class="inline-elements" -->
       <label for="input_date">Date*:</label>
-      <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime(" %Y-%m-%d") }}"
+      <input type="date" name="input_date" id="input_date" class="inputs" value="{{ today.strftime("%Y-%m-%d") }}"
         required size="10" maxlength="30">
       {% if message %}
       <a class="message">{{message_date}}</a>
@@ -157,11 +157,7 @@
   </div>
 </div>
 
-
-
-
-
-
+<!-- Date now -->
 <script>
   var input_date = document.getElementById("input_date");
   input_date.addEventListener("input", function () {

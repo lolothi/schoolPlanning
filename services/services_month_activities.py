@@ -3,6 +3,7 @@ import calendar
 import json
 from services.services_sqlite_db import get_db
 from services.services_child import getChilds
+from functions_help import calculate_real_activities_in_month
 
 # --- school Month ---
 def set_new_month(year, month, school_days=None):
@@ -34,6 +35,26 @@ def get_months():
         return res
     db.close()
 
+def delete_month_and_activities(month_id:int, year, month):  
+    month_str = str(month).zfill(2)
+    last_day = calendar.monthrange(year, month)[1]
+    reqSQLdelMonth = "DELETE from School_months WHERE id = ?"
+    reqSQLcheck = "SELECT * FROM Month_activities WHERE date BETWEEN ? AND ?"
+    reqSQLdelActivities = "DELETE FROM Month_activities WHERE date BETWEEN ? AND ?"
+    
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQLdelMonth, (month_id, ))
+    db.commit()
+
+    cur.execute(reqSQLcheck, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
+    res = cur.fetchall()
+    db.commit()
+    
+    if res:
+        cur.execute(reqSQLdelActivities, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
+        db.commit()
+    db.close()
 
 # Important get_months_with_details from School_months table because of empty month (without activities)
 def get_months_with_details():
@@ -143,40 +164,6 @@ def get_activities_by_month_group_by_day(year, month):
         return {}
 
 
-# Uniquement pour les details
-# def get_activities_price_by_month(year, month):
-#     db = get_db()
-#     month_str = str(month).zfill(2)
-#     last_day = calendar.monthrange(year, month)[1]
-#     reqSQL = "SELECT SUM(a.activity_price) FROM Month_activities ma INNER JOIN Activities a ON ma.activity_id = a.id WHERE date BETWEEN ? AND ?"
-#     cur = db.cursor()
-#     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
-#     res = cur.fetchall()
-#     if res:
-#         db.close()
-#         return res[0][0] 
-#     else:
-#         db.close()
-#         return 0
-
-
-# Uniquement pour details
-# def get_activities_by_month(year, month):
-#     db = get_db()
-#     month_str = str(month).zfill(2)
-#     last_day = calendar.monthrange(year, month)[1]
-#     reqSQL = "SELECT id, date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled, comment_id from Month_activities WHERE date BETWEEN ? AND ?"
-#     cur = db.cursor()
-#     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
-#     res = cur.fetchall()
-#     if res:
-#         db.close() 
-#         return res
-#     else:
-#         db.close()
-#         return []
-
-
 def get_real_activities_price_and_real_counted_activities_by_month(year, month):
     # res_with_details = []
     db = get_db()
@@ -202,30 +189,6 @@ def get_real_activities_price_and_real_counted_activities_by_month(year, month):
         return []
 
 
-def calculate_real_activities(
-    total_activities,
-    activity_price,
-    total_price,
-    school_canceled,
-    family_canceled,
-    strike_canceled,
-):
-    if school_canceled >= 1 or family_canceled >= 1 or strike_canceled >= 1:
-        real_total_price = total_price - (
-            (school_canceled + family_canceled + strike_canceled) * activity_price
-        )
-        real_total_activities = total_activities - (
-            school_canceled + family_canceled + strike_canceled
-        )
-    else:
-        real_total_price = total_price
-        real_total_activities = total_activities
-    return {
-        "real_total_price": real_total_price,
-        "real_total_activities": real_total_activities,
-    }
-
-
 def get_activities_price_by_month_group_by_child_activity(year, month):
     res_with_details = []
     db = get_db()
@@ -247,7 +210,7 @@ def get_activities_price_by_month_group_by_child_activity(year, month):
     if res:
         for child_activity in res:
             # for canceled activities substraction
-            real_activities = calculate_real_activities(
+            real_activities = calculate_real_activities_in_month(
                 child_activity[4],
                 child_activity[2],
                 child_activity[3],
