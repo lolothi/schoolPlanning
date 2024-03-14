@@ -148,6 +148,48 @@ def set_month_activity_for_all_children(date: date, activity_id: int, web_valida
     db.close()
 
 
+def get_activities_by_month_day(year, month, month_day):
+    db = get_db()
+    month_str = str(month).zfill(2)
+    month_day_str = str(month_day).zfill(2)
+    reqSQL = """SELECT ma.id, a.activity_name, c.child_name, 
+    ma.web_validated, ma.school_canceled, family_canceled, strike_canceled, comment_id
+    FROM Month_activities ma 
+    INNER JOIN Activities a ON ma.activity_id = a.id 
+    INNER JOIN Childs c ON c.id = ma.child_id 
+    WHERE date = ?"""
+    cur = db.cursor()
+    cur.execute(reqSQL, (f"{year}-{month_str}-{month_day_str}",))
+    res = cur.fetchall()
+    print('##get_activities_by_month_day:' ,f"{year}-{month_str}-{month_day_str}")
+    if res:
+        db.close()
+        activities_list = []
+        for row in res:
+            activity_dict = {
+                'id': row[0],
+                'activity_name': row[1],
+                'child_name': row[2],
+                'web_validated': row[3],
+                'school_canceled': row[4],
+                'family_canceled': row[5],
+                'strike_canceled': row[6],
+                'comment_id': row[7]
+            }
+            activities_list.append(activity_dict)
+        return activities_list
+    else:
+        db.close()
+        return []
+
+def update_month_activity(id, month_activity):
+    db = get_db()
+    reqSQL = "UPDATE Month_activities SET web_validated = ?, school_canceled = ?, family_canceled = ?, strike_canceled = ? , comment_id = ? WHERE id = ?"
+    cur = db.cursor()
+    cur.execute(reqSQL, (month_activity['web_validated'], month_activity['school_canceled'], month_activity['family_canceled'], month_activity['strike_canceled'], month_activity['comment_id'], id))
+    db.commit()
+    db.close()
+
 def get_activities_by_month_group_by_day(year, month):
     db = get_db()
     month_str = str(month).zfill(2)
@@ -170,7 +212,6 @@ def get_activities_by_month_group_by_day(year, month):
 
 
 def get_real_activities_price_and_real_counted_activities_by_month(year, month):
-    # res_with_details = []
     db = get_db()
     month_str = str(month).zfill(2)
     last_day = calendar.monthrange(year, month)[1]
@@ -236,12 +277,13 @@ def get_activities_price_by_month_group_by_child_activity(year, month):
                 + child_activity[7],
             }
             res_with_details.append(result_dict)
-            print("--child_activity", res_with_details)
         db.close()
         return res_with_details
     else:
         db.close()
         return []
+
+
 
 def check_existing_activities_in_month(year, month):
     db = get_db()
@@ -299,25 +341,19 @@ def set_day_off_on_activity(
     reqSQL = ""
     if child_id == 0:
         if strike_canceled == 1:
-            print("strike_canceled")
             reqSQL = "UPDATE Month_activities SET strike_canceled = 1 WHERE date = ?"
         elif family_canceled == 1:
-            print("strike_canceled")
             reqSQL = "UPDATE Month_activities SET family_canceled = 1 WHERE date = ?"
         elif school_canceled == 1:
-            print("strike_canceled")
             reqSQL = "UPDATE Month_activities SET school_canceled = 1 WHERE date = ?"
         cur = db.cursor()
         cur.execute(reqSQL, (date,))
     else:
         if strike_canceled == 1:
-            print("strike_canceled")
             reqSQL = "UPDATE Month_activities SET strike_canceled = 1 WHERE date = ? and child_id = ?"
         elif family_canceled == 1:
-            print("strike_canceled")
             reqSQL = "UPDATE Month_activities SET family_canceled = 1 WHERE date = ? and child_id = ?"
         elif school_canceled == 1:
-            print("strike_canceled")
             reqSQL = "UPDATE Month_activities SET school_canceled = 1 WHERE date = ? and child_id = ?"
         cur = db.cursor()
         cur.execute(reqSQL, (date, child_id))

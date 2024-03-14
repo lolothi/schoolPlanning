@@ -3,10 +3,38 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 
-<h1> {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
+<h1>Activités du .. {{month_day}} {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
 <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
     data-target="#deleteModal">Supprimer</button>
 <br>
 <br>
+
+{%if activities_by_month_day%}
+        <ul>
+            {%for activity in activities_by_month_day%}
+            <li>
+            <div class="inline-elements">
+                <div>{{ activity.child_name }} - {{ activity.activity_name }}</div>
+                <form method="post" action="{{ url_for('month_activity_update', item_id=activity.id) }}">
+                  <input type="web_validated" name="web_validated" id="web_validated" class="inputs" size="10"
+                    maxlength="30" value="{{activity.web_validated}}">
+                    <input type="school_canceled" name="school_canceled" id="school_canceled" class="inputs" size="10"
+                    maxlength="30" value="{{activity.school_canceled}}">
+                    <input type="family_canceled" name="family_canceled" id="family_canceled" class="inputs" size="10"
+                    maxlength="30" value="{{activity.family_canceled}}">
+                    <input type="strike_canceled" name="strike_canceled" id="strike_canceled" class="inputs" size="10"
+                    maxlength="30" value="{{activity.strike_canceled}}">
+                    <input type="web_validated" name="web_validated" id="web_validated" class="inputs" size="10"
+                    maxlength="30" value="{{activity.web_validated}}">
+
+                  <button type="submit" id="submitBtn" class="transparent-button"><img src={{ url_for('static',
+                      filename='images/verifier.png' )}} height="15" /></button>
+                </form>
+
+            </li>
+            {%endfor%}
+        </ul>
+        {%endif%}
+
 
 {% endblock %}

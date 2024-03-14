@@ -20,7 +20,8 @@ from services.services_usual_activity import (
 from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
-    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity, delete_month_and_activities)
+    set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity, delete_month_and_activities,
+    get_activities_by_month_day, update_month_activity)
 from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
 from classes.MonthActivities import MonthActivities
@@ -143,6 +144,29 @@ def supprimer_mois(item_id):
     print("--SUPPRIMEr--mois ", item_id, month_year, month)
     delete_month_and_activities(int(item_id), int(month_year), int(month))
     
+    return redirect("/")
+
+@app.route("/mois/<int:item_id>/jour/<int:month_day>", methods=["POST"])
+def mois_jour_activites(item_id, month_day):
+    
+    month_year = request.form.get("month_year")
+    month = request.form.get("month")
+
+    activities_by_month_day = get_activities_by_month_day(month_year, month, month_day)
+    
+    return render_template("day_activities.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_day=month_day, activities_by_month_day=activities_by_month_day)
+
+@app.route("/month_activity_update/<int:item_id>", methods=["POST", "GET"])
+def month_activity_update(item_id):
+    updated_activity = {
+        "web_validated": request.form.get("web_validated"),
+        "school_canceled": request.form.get("school_canceled"),
+        "family_canceled": request.form.get("family_canceled"),
+        "strike_canceled": request.form.get("strike_canceled"),
+        "comment_id": request.form.get("comment_id"),
+    }
+    if request.method == "POST":
+        update_month_activity(item_id, updated_activity)
     return redirect("/")
 
 @app.route("/mode_edition", methods=["POST"])
