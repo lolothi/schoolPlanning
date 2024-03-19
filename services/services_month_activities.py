@@ -282,9 +282,9 @@ def get_activities_price_by_month_group_by_child_activity(year, month):
     reqSQL = """SELECT c.child_name, a.activity_name, a.activity_price, 
     SUM(a.activity_price) AS total_price, 
     COUNT(c.child_name) AS total_activities, 
-    SUM(ma.school_canceled) AS total_school_canceled, 
-    SUM(ma.family_canceled) AS total_family_canceled, 
-    SUM(ma.strike_canceled) AS total_strike_canceled
+    IFNULL(SUM(ma.school_canceled),0) AS total_school_canceled, 
+    IFNULL(SUM(ma.family_canceled),0) AS total_family_canceled, 
+    IFNULL(SUM(ma.strike_canceled),0) AS total_strike_canceled
     FROM Month_activities ma 
     INNER JOIN Activities a ON ma.activity_id = a.id 
     INNER JOIN Childs c ON c.id = ma.child_id 

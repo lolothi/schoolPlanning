@@ -76,7 +76,7 @@ def calculate_real_activities_in_month(
     family_canceled,
     strike_canceled,
 ):
-    if school_canceled >= 1 or family_canceled >= 1 or strike_canceled >= 1:
+    if (school_canceled >= 1 or family_canceled >= 1 or strike_canceled >= 1):
         real_total_price = total_price - (
             (school_canceled + family_canceled + strike_canceled) * activity_price
         )
