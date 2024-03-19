@@ -227,6 +227,7 @@ def get_real_activities_price_and_real_counted_activities_by_month(year, month):
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()
+    print("--REAL-PRICE: ", res[0])
     if res:
         db.close()
         return res[0]
@@ -242,17 +243,20 @@ def get_activities_price_by_month_group_by_child_activity(year, month):
     last_day = calendar.monthrange(year, month)[1]
     reqSQL = """SELECT c.child_name, a.activity_name, a.activity_price, 
     SUM(a.activity_price) AS total_price, 
-    COUNT(*) AS total_activities, 
+    COUNT(c.child_name) AS total_activities, 
     SUM(ma.school_canceled) AS total_school_canceled, 
     SUM(ma.family_canceled) AS total_family_canceled, 
     SUM(ma.strike_canceled) AS total_strike_canceled
     FROM Month_activities ma 
     INNER JOIN Activities a ON ma.activity_id = a.id 
     INNER JOIN Childs c ON c.id = ma.child_id 
-    WHERE date BETWEEN ? AND ? GROUP by ma.child_id, a.activity_name"""
+    WHERE date BETWEEN ? AND ? 
+    GROUP by ma.child_id, a.activity_name
+    ORDER BY ma.child_id ASC"""
     cur = db.cursor()
     cur.execute(reqSQL, (f"{year}-{month_str}-01", f"{year}-{month_str}-{last_day}"))
     res = cur.fetchall()
+    print("--ACTIVITIES:", res)
     if res:
         for child_activity in res:
             # for canceled activities substraction
