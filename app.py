@@ -41,11 +41,6 @@ error_date = None
 
 @app.route("/", methods=["POST", "GET"])
 def index():
-    month = (request.form.get("month-select"),)
-    year = (request.form.get("year"),)
-    set_month_with_usual_activities = request.form.get(
-        "set_month_with_usual_activities"
-    )
 
     school_details_months = get_months_with_details()
     childrenInDb = getChilds()
@@ -53,14 +48,7 @@ def index():
     usual_activities_in_DB = getUsualActivities()
 
     month_canceled_type = ["absence enfant", "grève", "annulation par école"]
-    if request.method == "POST":
-        try:
-            mymonthActivities = MonthActivities(year[0], Mois[month[0]])
-            mymonthActivities.set_month()
-            if set_month_with_usual_activities == "on":
-                mymonthActivities.set_activities_from_usual_activities()
-        except:
-            error = "Erreur dans la création"
+    
 
     return render_template(
         "home.html",
@@ -74,6 +62,26 @@ def index():
         month_canceled_type=month_canceled_type,
     )
 
+@app.route("/month_create", methods=["POST"])
+def month_create():
+    global error
+    global message
+
+    month = (request.form.get("month-select"),)
+    year = (request.form.get("year"),)
+    set_month_with_usual_activities = request.form.get(
+        "set_month_with_usual_activities"
+    )
+
+    if request.method == "POST":
+        try:
+            mymonthActivities = MonthActivities(year[0], Mois[month[0]])
+            mymonthActivities.set_month()
+            if set_month_with_usual_activities == "on":
+                mymonthActivities.set_activities_from_usual_activities()
+        except:
+            error = "Erreur dans la création"
+    return redirect("/")
 
 @app.route("/day_off_create", methods=["POST", "GET"])
 def day_off_create():

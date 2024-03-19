@@ -1,6 +1,6 @@
 from classes.JoursFeriesClass import JoursFeries
 import calendar
-from datetime import date
+from datetime import date, datetime
 from vacances_scolaires_france import SchoolHolidayDates
 
 
@@ -48,6 +48,7 @@ def month_days(year, month):
         for day in week:
             if day != 0:
                 month_day = date(year, month, day)
+                # month_day_ts = datetime(year, month, day).timestamp()
                 if month_day in public_holidays:
                     month_all_days[month_day] = {'week_day': week.index(day)+1, 'type': 'public_holiday'}
                 elif month_day in holidays_general:
@@ -56,6 +57,7 @@ def month_days(year, month):
                     month_all_days[month_day] = {'week_day': week.index(day)+1, 'type': 'school_day'}
                 else:
                     month_all_days[month_day] = {'week_day': week.index(day)+1, 'type': 'off'}
+    print('--month_all_days: ', month_all_days)
     return month_all_days
 
 

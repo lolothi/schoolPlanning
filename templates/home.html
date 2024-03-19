@@ -64,7 +64,7 @@
   <h5 class="card-header">Nouveau Mois</h5>
   <div class="card-body">
     <p>
-    <form action="" method="POST" class="inline-elements">
+    <form action="{{ url_for('month_create') }}" method="POST" class="inline-elements">
       <label for="month-select">Mois :</label>
       <select name="month-select" id="month-select" id="month" required>
         {%for mois in Mois%}
