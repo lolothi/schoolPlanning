@@ -42,27 +42,12 @@ def get_off_days_by_month(year:int, month:int):
         return []
 
 def get_off_days_by_date_child(date: date, child_id:int):
-    off_days_by_month = []
     db = get_db()
     reqSQL = "SELECT school_canceled, family_canceled, strike_canceled FROM off_days WHERE date = ? and child_id = ?"
     cur = db.cursor()
     cur.execute(reqSQL, (date,child_id))
     res = cur.fetchone()
     if res:
-        return res
-    else:
-        db.close()
-        return []
-    
-    #ne fonctionne pas, pas assez rapide
-def check_off_day_by_date(date:date):
-    db = get_db()
-    reqSQL = "SELECT date, child_id, school_canceled, family_canceled, strike_canceled FROM off_days WHERE date = ?"
-    cur = db.cursor()
-    cur.execute(reqSQL, (date,))
-    res = cur.fetchall()
-    if res:
-        db.close()
         return res
     else:
         db.close()
