@@ -39,6 +39,7 @@ def month_business_days(year, month):
                 month_business_days.append(date(year, month, day))
     return month_business_days
 
+#every month day with type of day
 def month_days(year, month):
     public_holidays = set(month_public_holidays(year, month))
     holidays_general = set(holidays(year, month))
@@ -48,7 +49,6 @@ def month_days(year, month):
         for day in week:
             if day != 0:
                 month_day = date(year, month, day)
-                # month_day_ts = datetime(year, month, day).timestamp()
                 if month_day in public_holidays:
                     month_all_days[month_day] = {'week_day': week.index(day)+1, 'type': 'public_holiday'}
                 elif month_day in holidays_general:

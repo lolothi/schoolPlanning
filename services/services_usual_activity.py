@@ -48,7 +48,13 @@ def get_list_of_usual_activities_group_by_day():
 
 def get_dict_of_usual_activities_group_by_day():
     db = get_db()
-    reqSQL = "SELECT u.day, '[' || GROUP_CONCAT(json_object('activity_id', a.id, 'child_id', c.id)) || ']' AS activities_and_children from Usual_activities u INNER JOIN Activities a ON a.id = u.activity_id INNER JOIN Childs c ON c.id = u.child_id GROUP BY u.day"
+    reqSQL = """
+    SELECT u.day, 
+    '[' || GROUP_CONCAT(json_object('activity_id', a.id, 'child_id', c.id)) || ']' AS activities_and_children 
+    from Usual_activities u 
+    INNER JOIN Activities a ON a.id = u.activity_id 
+    INNER JOIN Childs c ON c.id = u.child_id 
+    GROUP BY u.day"""
     cur = db.cursor()
     cur.execute(reqSQL)
     res = cur.fetchall()

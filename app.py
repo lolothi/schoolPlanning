@@ -149,7 +149,7 @@ def supprimer_mois(item_id):
     month_year = request.form.get("month_year")
     month = request.form.get("month")
     
-    print("--SUPPRIMEr--mois ", item_id, month_year, month)
+    # print("--SUPPRIMEr--mois ", item_id, month_year, month)
     delete_month_and_activities(int(item_id), int(month_year), int(month))
     
     return redirect("/")

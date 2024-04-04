@@ -3,8 +3,9 @@ import calendar
 import json
 from services.services_sqlite_db import get_db
 from services.services_child import getChilds
-from functions_help import calculate_real_activities_in_month
-from services.services_off_days import check_off_day_by_date
+from functions_help import calculate_real_activities_in_month, month_days
+from services.services_off_days import check_existing_off_day_by_date_child, get_off_days_by_date_child
+from services.services_usual_activity import get_dict_of_usual_activities_group_by_day
 
 
 # --- school Month ---
@@ -39,7 +40,6 @@ def get_months():
 
 def delete_month_and_activities(month_id: int, year, month):
     reqSQLdelMonth = "DELETE from School_months WHERE id = ?"
-
     db = get_db()
     cur = db.cursor()
     cur.execute(reqSQLdelMonth, (month_id,))
@@ -138,24 +138,27 @@ def set_month_activity(
     school_canceled: bool = 0,
 ):
     db = get_db()
+    
+    if check_existing_off_day_by_date_child(date, child_id) is True:
+        school_canceled, family_canceled, strike_canceled = get_off_days_by_date_child(date, child_id)
 
-    # reqSQL = (
-    #     "INSERT INTO Month_activities (date, activity_id, child_id) VALUES (?, ?, ?)"
-    #     "UPDATE Month_activities SET "
-    #     "school_canceled = (SELECT off_days.school_canceled FROM off_days WHERE off_days.date = Month_activities.date AND off_days.child_id = Month_activities.child_id), "
-    #     "family_canceled = (SELECT off_days.family_canceled FROM off_days WHERE off_days.date = Month_activities.date AND off_days.child_id = Month_activities.child_id), "
-    #     "strike_canceled = (SELECT off_days.strike_canceled FROM off_days WHERE off_days.date = Month_activities.date AND off_days.child_id = Month_activities.child_id) "
-    #     "WHERE Month_activities.date = ? AND Month_activities.child_id = ? AND "
-    #     "EXISTS (SELECT 1 FROM off_days WHERE off_days.date = Month_activities.date AND off_days.child_id = Month_activities.child_id)"
-    # )
-    reqSQL = (
-        "INSERT INTO Month_activities (date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled) VALUES (?, ?, ?, ?, ?, ?, ?)"
-    )
+    reqSQL = "INSERT INTO Month_activities (date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    
     cur = db.cursor()
-    cur.execute(reqSQL, (date, activity_id, child_id, web_validated, school_canceled, family_canceled, strike_canceled))
+    cur.execute(
+        reqSQL,
+        (
+            date,
+            activity_id,
+            child_id,
+            web_validated,
+            school_canceled,
+            family_canceled,
+            strike_canceled,
+        ),
+    )
     db.commit()
     db.close()
-
 
 def set_month_activity_for_all_children(date: date, activity_id: int, web_validated=0):
     reqSQL = "INSERT INTO Month_activities (date, activity_id, child_id, web_validated) VALUES (?, ?, ?, ?, ?)"
@@ -366,6 +369,21 @@ def check_existing_activity_in_month_activities(activity_id):
     else:
         db.close()
         return False
+    
+def check_existing_activity_date_in_month_activities(date: date):
+    reqSQL = "SELECT * from Month_activities WHERE date = ?"
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(reqSQL, (date,))
+    res = cur.fetchone()
+    if res:
+        db.close()
+        return True
+    else:
+        db.close()
+        return False
+    
+
 
 
 # Month Activities : DAYS OFF
@@ -396,6 +414,6 @@ def set_day_off_on_activity(
         elif school_canceled == 1:
             reqSQL = "UPDATE Month_activities SET school_canceled = 1 WHERE date = ? and child_id = ?"
         cur = db.cursor()
-        cur.execute(reqSQL, (date, child_id))
+        cur.execute(reqSQL, (date, child_id))     
     db.commit()
     db.close()
