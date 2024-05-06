@@ -37,6 +37,7 @@ isInEditionMode = False
 error = None
 message = None
 error_date = None
+current_month = []
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -133,13 +134,11 @@ def day_off_create():
 
 @app.route("/mois/<int:item_id>", methods=["POST"])
 def mois(item_id):
-    
     month_year = request.form.get("month_year")
     month = request.form.get("month")
     total_price_activities = request.form.get("price_activities")
 
     month_prices_details = get_activities_price_by_month_group_by_child_activity(int(month_year), int(month))
-    # print('--PRICE',month_prices_details)
     
     return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details, total_price_activities=total_price_activities)
 
@@ -149,8 +148,18 @@ def supprimer_mois(item_id):
     month_year = request.form.get("month_year")
     month = request.form.get("month")
     
-    # print("--SUPPRIMEr--mois ", item_id, month_year, month)
     delete_month_and_activities(int(item_id), int(month_year), int(month))
+    
+    return redirect("/")
+
+@app.route("/mois/payer/<int:item_id>", methods=["POST"])
+def payer_mois(item_id):
+    
+    payed_price = request.form.get("payed_price")
+    month_year = request.form.get("month_year")
+    month = request.form.get("month")
+    
+    print("--Payer--mois ", item_id, month_year, month, payed_price)
     
     return redirect("/")
 

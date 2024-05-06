@@ -4,7 +4,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 
 <h1> {{ Mois(mymonthActivities.month).name }} {{ mymonthActivities.year }}</h1>
-<button type="button" class="btn btn-outline-secondary">Facture non réglée</button>
+<button type="button" class="btn btn-outline-secondary" data-toggle="modal"
+data-target="#billModal">Facture non réglée</button>
 <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
     data-target="#deleteModal">Supprimer</button>
 <br>
@@ -110,6 +111,37 @@
                     <input type="hidden" name="month" value="{{ mymonthActivities.month }}">
                     <button type="submit" class="btn btn-danger">Supprimer</button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal to bill a month -->
+<div class="modal fade" id="billModal" tabindex="-1" role="dialog" aria-labelledby="billModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="billModalLabel">Payer le mois</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Voulez vous payer le mois de {{ Mois(mymonthActivities.month).name }} {{
+                mymonthActivities.year }} ?
+                Cela supprimera l'activité en cours et archivera les informations utiles.
+                <form method="post" action="{{ url_for('payer_mois', item_id=month_id) }}">
+                    <label for="payed_price">Prix payé :</label>
+                    <input name="payed_price" type="number" step="0.1" value="{{total_price_activities}}" size="7"> €
+            </div>
+            <div class="modal-footer">
+                    <br>
+                    <input type="hidden" name="month_year" value="{{ mymonthActivities.year }}">
+                    <input type="hidden" name="month" value="{{ mymonthActivities.month }}">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
             </div>
         </div>
     </div>
