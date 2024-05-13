@@ -57,7 +57,6 @@ def month_days(year, month):
                     month_all_days[month_day] = {'week_day': week.index(day)+1, 'type': 'school_day'}
                 else:
                     month_all_days[month_day] = {'week_day': week.index(day)+1, 'type': 'off'}
-    print('--month_all_days: ', month_all_days)
     return month_all_days
 
 

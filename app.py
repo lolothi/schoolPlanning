@@ -21,11 +21,11 @@ from services.services_month_activities import (
     get_months_with_details,
     set_month_activity,
     set_month_activity_for_all_children, get_activities_price_by_month_group_by_child_activity,set_day_off_on_activity, delete_month_and_activities,
-    get_activities_by_month_day, update_month_activity)
+    get_activities_by_month_day, update_month_activity, update_month)
 from services.services_off_days import set_off_days
 from classes.JoursFeriesClass import JoursFeries, School_day, Jour, Mois
 from classes.MonthActivities import MonthActivities
-from functions_help import stringToNumber, month_days
+from functions_help import stringToNumber
 
 
 app = Flask(__name__)
@@ -37,7 +37,7 @@ isInEditionMode = False
 error = None
 message = None
 error_date = None
-current_month = []
+current_month_prices_details = []
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -50,6 +50,7 @@ def index():
 
     month_canceled_type = ["absence enfant", "grève", "annulation par école"]
     
+    print('--school_details_months ', school_details_months)
 
     return render_template(
         "home.html",
@@ -134,13 +135,15 @@ def day_off_create():
 
 @app.route("/mois/<int:item_id>", methods=["POST"])
 def mois(item_id):
+    global current_month_prices_details
+
     month_year = request.form.get("month_year")
     month = request.form.get("month")
     total_price_activities = request.form.get("price_activities")
 
-    month_prices_details = get_activities_price_by_month_group_by_child_activity(int(month_year), int(month))
+    current_month_prices_details = get_activities_price_by_month_group_by_child_activity(int(month_year), int(month))
     
-    return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=month_prices_details, total_price_activities=total_price_activities)
+    return render_template("month.html", month_id=item_id , Jour=Jour, Mois=Mois, mymonthActivities = MonthActivities(month_year, month), stringToNumber=stringToNumber, month_prices_details=current_month_prices_details, total_price_activities=total_price_activities)
 
 @app.route("/mois/supprimer/<int:item_id>", methods=["POST"])
 def supprimer_mois(item_id):
@@ -158,9 +161,12 @@ def payer_mois(item_id):
     payed_price = request.form.get("payed_price")
     month_year = request.form.get("month_year")
     month = request.form.get("month")
+
+    current_month_activities = MonthActivities(month_year, month)
     
-    print("--Payer--mois ", item_id, month_year, month, payed_price)
-    
+    if request.method == "POST":
+        update_month(item_id, 1, current_month_activities.month_totals['price'], payed_price, str(current_month_prices_details), current_month_activities.month_totals['school_canceled'],current_month_activities.month_totals['family_canceled'] ,current_month_activities.month_totals['strike_canceled'])
+
     return redirect("/")
 
 @app.route("/mois/<int:item_id>/jour/<int:month_day>", methods=["POST"])

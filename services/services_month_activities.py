@@ -38,6 +38,20 @@ def get_months():
     db.close()
 
 
+def update_month(month_id: int, payed, price_calculated, price_payed, activities, school_canceled,family_canceled ,strike_canceled):
+    db = get_db()
+    reqSQL = "UPDATE School_months SET payed = ?, price_calculated = ?, price_payed = ?, activities = ?,school_canceled	= ?,family_canceled	= ?,strike_canceled = ? WHERE id = ?"
+    cur = db.cursor()
+    cur.execute(
+        reqSQL,
+        (
+            payed, price_calculated, price_payed, activities, school_canceled,family_canceled ,strike_canceled, month_id, 
+        ),
+    )
+    db.commit()
+    db.close()
+
+
 def delete_month_and_activities(month_id: int, year, month):
     reqSQLdelMonth = "DELETE from School_months WHERE id = ?"
     db = get_db()
